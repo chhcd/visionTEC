@@ -87,29 +87,29 @@ void rawToMat( Mat &destImage, CRawImage* sourceImage)
 // }
 
 //codigo del click en pantalla
-// void mouseCoordinatesExampleCallback(int event, int x, int y, int flags, void* param)
-// {
-//     uchar* destination;
-//     switch (event)
-//     {
-//         case CV_EVENT_LBUTTONDOWN:
-//             Px=x;
-//             Py=y;
-//             destination = (uchar*) imagenClick.ptr<uchar>(Py);
-//             vB=destination[Px * 3];
-//             vG=destination[Px*3+1];
-//             vR=destination[Px*3+2];
-//             break;
-//         case CV_EVENT_MOUSEMOVE:
-//             break;
-//         case CV_EVENT_LBUTTONUP:
-//             break;
-//         case CV_EVENT_RBUTTONDOWN:
-//         //flag=!flag;
-//             break;
+void mouseCoordinatesExampleCallback(int event, int x, int y, int flags, void* param)
+{
+    uchar* destination;
+    switch (event)
+    {
+        case CV_EVENT_LBUTTONDOWN:
+            Px=x;
+            Py=y;
+            destination = (uchar*) imagenClick.ptr<uchar>(Py);
+            vB=destination[Px * 3];
+            vG=destination[Px*3+1];
+            vR=destination[Px*3+2];
+            break;
+        case CV_EVENT_MOUSEMOVE:
+            break;
+        case CV_EVENT_LBUTTONUP:
+            break;
+        case CV_EVENT_RBUTTONDOWN:
+        //flag=!flag;
+            break;
         
-//     }
-// }
+    }
+}
 
 int main(int argc,char* argv[])
 {
