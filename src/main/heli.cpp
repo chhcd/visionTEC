@@ -29,6 +29,8 @@ int joypadRoll, joypadPitch, joypadVerticalSpeed, joypadYaw;
 bool navigatedWithJoystick, joypadTakeOff, joypadLand, joypadHover;
 string ultimo = "init";
 
+
+// variable to store frame information upon clicks
 int Px;
 int Py;
 int vR;
@@ -168,11 +170,12 @@ int main(int argc,char* argv[])
 
             // Copy to OpenCV Mat
             rawToMat(currentImage, image);
-            imshow("ParrotCam", currentImage);
+            
         }
 
+        // show current image
+        imshow("ParrotCam", currentImage);
 
-        
         // Call flipped image function
         flipImageBasic(currentImage, flippedImage);
 
@@ -260,6 +263,8 @@ int main(int argc,char* argv[])
         fprintf(stdout, "  TakeOff : %d \n", joypadTakeOff);
         fprintf(stdout, "  Land    : %d \n", joypadLand);
         fprintf(stdout, "Navigating with Joystick: %d \n", navigatedWithJoystick ? 1 : 0);
+        
+
         cout<<"Pos X: "<<Px<<" Pos Y: "<<Py<<" Valor RGB: ("<<vR<<","<<vG<<","<<vB<<")"<<endl;
         
         
