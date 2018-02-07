@@ -144,8 +144,61 @@ int main(int argc,char* argv[])
     namedWindow("Click");
     setMouseCallback("Click", mouseCoordinatesExampleCallback);
 
+
+    /*  INFINITE LOOP */
     while (stop == false)
     {
+
+        /* ----------------------------------------------------- */
+        /*  TEST IMAGE CODE */
+        /* ----------------------------------------------------- */
+
+        //image is captured
+        heli->renewImage(image);
+
+        // Copy to OpenCV Mat
+        rawToMat(currentImage, image);
+        imshow("ParrotCam", currentImage);
+
+        // Call flipped image function
+        flipImageBasic(currentImage, flippedImage);
+
+        // Show it
+        imshow("FlippedCam", flippedImage);
+
+        imagenClick=currentImage;
+        imshow("Click", imagenClick);
+
+        /*  Click events */
+        char key = waitKey(5);
+        switch (key) {
+            case 'a': yaw = -20000.0; break;
+            case 'd': yaw = 20000.0; break;
+            case 'w': height = -20000.0; break;
+            case 's': height = 20000.0; break;
+            case 'q': heli->takeoff(); break;
+            case 'e': heli->land(); break;
+            case 'z': heli->switchCamera(0); break;
+            case 'x': heli->switchCamera(1); break;
+            case 'c': heli->switchCamera(2); break;
+            case 'v': heli->switchCamera(3); break;
+            case 'j': roll = -20000.0; break;
+            case 'l': roll = 20000.0; break;
+            case 'i': pitch = -20000.0; break;
+            case 'k': pitch = 20000.0; break;
+            case 'h': hover = (hover + 1) % 2; break;
+            case 27: stop = true; break;
+            default: pitch = roll = yaw = height = 0.0;
+
+
+        }
+
+
+
+
+        /* ----------------------------------------------------- */
+        /*  PARRTO CODE */
+        /* ----------------------------------------------------- */
 
         // Clear the console
         printf("\033[2J\033[1;1H");
@@ -180,42 +233,8 @@ int main(int argc,char* argv[])
         fprintf(stdout, "Navigating with Joystick: %d \n", navigatedWithJoystick ? 1 : 0);
         cout<<"Pos X: "<<Px<<" Pos Y: "<<Py<<" Valor RGB: ("<<vR<<","<<vG<<","<<vB<<")"<<endl;
         
-        //image is captured
-        heli->renewImage(image);
+        
 
-        // Copy to OpenCV Mat
-        rawToMat(currentImage, image);
-        imshow("ParrotCam", currentImage);
-
-        // Call flipped image function
-        flipImageBasic(currentImage, flippedImage);
-
-        // Show it
-        imshow("FlippedCam", flippedImage);
-
-        imagenClick=currentImage;
-        imshow("Click", imagenClick);
-
-        char key = waitKey(5);
-        switch (key) {
-            case 'a': yaw = -20000.0; break;
-            case 'd': yaw = 20000.0; break;
-            case 'w': height = -20000.0; break;
-            case 's': height = 20000.0; break;
-            case 'q': heli->takeoff(); break;
-            case 'e': heli->land(); break;
-            case 'z': heli->switchCamera(0); break;
-            case 'x': heli->switchCamera(1); break;
-            case 'c': heli->switchCamera(2); break;
-            case 'v': heli->switchCamera(3); break;
-            case 'j': roll = -20000.0; break;
-            case 'l': roll = 20000.0; break;
-            case 'i': pitch = -20000.0; break;
-            case 'k': pitch = 20000.0; break;
-            case 'h': hover = (hover + 1) % 2; break;
-            case 27: stop = true; break;
-            default: pitch = roll = yaw = height = 0.0;
-        }
 
         if (joypadTakeOff) {
             heli->takeoff();
