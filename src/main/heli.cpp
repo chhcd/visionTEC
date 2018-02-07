@@ -37,6 +37,7 @@ int vB;
 
 Mat imagenClick;
 
+
 /*
  * This method flips horizontally the sourceImage into destinationImage. Because it uses 
  * "Mat::at" method, its performance is low (redundant memory access searching for pixels).
@@ -145,6 +146,12 @@ int main(int argc,char* argv[])
     setMouseCallback("Click", mouseCoordinatesExampleCallback);
 
 
+
+
+
+
+    bool freezeFrame = false;
+
     /*  INFINITE LOOP */
     while (stop == false)
     {
@@ -153,13 +160,19 @@ int main(int argc,char* argv[])
         /*  TEST IMAGE CODE */
         /* ----------------------------------------------------- */
 
-        //image is captured
-        heli->renewImage(image);
 
-        // Copy to OpenCV Mat
-        rawToMat(currentImage, image);
-        imshow("ParrotCam", currentImage);
+        if (!freezeFrame)
+        {
+            //image is captured
+            heli->renewImage(image);
 
+            // Copy to OpenCV Mat
+            rawToMat(currentImage, image);
+            imshow("ParrotCam", currentImage);
+        }
+
+
+        
         // Call flipped image function
         flipImageBasic(currentImage, flippedImage);
 
@@ -169,9 +182,15 @@ int main(int argc,char* argv[])
         imagenClick=currentImage;
         imshow("Click", imagenClick);
 
+        
+
+
+
+
         /*  Click events */
         char key = waitKey(5);
         switch (key) {
+            /* Control Parrot */
             case 'a': yaw = -20000.0; break;
             case 'd': yaw = 20000.0; break;
             case 'w': height = -20000.0; break;
@@ -188,6 +207,16 @@ int main(int argc,char* argv[])
             case 'k': pitch = 20000.0; break;
             case 'h': hover = (hover + 1) % 2; break;
             case 27: stop = true; break;
+
+
+            /* Tests */
+
+            // freeze frame
+            case 'p':
+                freezeFrame = !freezeFrame;
+
+
+            /* Default */
             default: pitch = roll = yaw = height = 0.0;
 
 
