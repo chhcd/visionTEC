@@ -69,22 +69,22 @@ void rawToMat( Mat &destImage, CRawImage* sourceImage)
 }
 
 // Click en pantalla
-void mouseCoordinatesExampleCallback(int event, int x, int y, int flags, void* param)
-{
-    switch (event)
-    {
-        case CV_EVENT_LBUTTONDOWN:
-            cout << "  Mouse X, Y: " << x << ", " << y ;
-            cout << endl;
-            /*  Draw a point */
-            points.push_back(Point(x, y));
-            break;
-        case CV_EVENT_MOUSEMOVE:
-            break;
-        case CV_EVENT_LBUTTONUP:
-            break;
-    }
-}
+// void mouseCoordinatesExampleCallback(int event, int x, int y, int flags, void* param)
+// {
+//     switch (event)
+//     {
+//         case CV_EVENT_LBUTTONDOWN:
+//             cout << "  Mouse X, Y: " << x << ", " << y ;
+//             cout << endl;
+//             /*  Draw a point */
+//             points.push_back(Point(x, y));
+//             break;
+//         case CV_EVENT_MOUSEMOVE:
+//             break;
+//         case CV_EVENT_LBUTTONUP:
+//             break;
+//     }
+// }
 
 //codigo del click en pantalla
 // void mouseCoordinatesExampleCallback(int event, int x, int y, int flags, void* param)
