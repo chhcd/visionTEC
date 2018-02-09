@@ -27,7 +27,6 @@ void mCoordinatesComponentVal(int event, int x, int y, int flags, void* param)
 	int vH,vS,vV;
 	int vY,vI,vQ;
 
-    uchar* destination;
     switch (event)
     {
         case CV_EVENT_LBUTTONDOWN:
@@ -74,15 +73,14 @@ void trackbarCallBack(int,void*)
 
 int main(int argc, char *argv[])
 {
-	/* First, open camera device */
+	/* Open camera device */
 	VideoCapture camera = VideoCapture(0);
-	/* Create images where captured and transformed frames are going to be stored */
+
 
 
 	/* Show interface menu to user*/
 	showMenu();
 
-	
 	/* Create Trackbar */
 	namedWindow("Bin Value",1);
 	Mat trackImage = Mat::zeros(Size(500,30),CV_8UC1);
@@ -94,38 +92,29 @@ int main(int argc, char *argv[])
 	setMouseCallback("Click", mCoordinatesComponentVal);
 
 
-
-
 	bool freezeImage = false;
 	bool bContinue = true;
 	while (bContinue)
 	{
 
-
-
 		if(!freezeImage){
 			/* Obtain a new frame from camera */
 			camera.read(currentImage);
 		}
-  
- 
+
+  		/* Imit gray image based on image from camera*/
 		grayImage = Mat::zeros(currentImage.size(),CV_8UC1);
 
-    	
-
-
-
-		/* Call custom flipping routine. From OpenCV, you could call flip(currentImage, flippedImage, 1) */
-		//flipImageBasic(currentImage, flippedImage);
+    	/* Calling routines to convert color spaces*/
 		color2gray(currentImage,grayImage);
 		cvtColor(currentImage,hsvImage,CV_RGB2HSV);
 		gray2threshold(grayImage,binImage,sliderBinValue);
 
 		/* Show images */
 		imshow("Click", currentImage);
-		//imshow("Flipped", flippedImage);
 		//imshow("Grayed",grayImage);
 		imshow("HSV",hsvImage);
+		//imshow("YIQ",yiqImage);
 		imshow("Gray Binarizacion", binImage);
 
 
