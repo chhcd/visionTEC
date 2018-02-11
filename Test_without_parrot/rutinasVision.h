@@ -1,3 +1,6 @@
+#ifndef rutinasVision_h
+#define rutinasVision_h
+
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -51,6 +54,25 @@ void color2gray(const Mat &sourceImage, Mat &grayImage)
 	}
 }
 
+void color2yiq(const Mat &sourceImage, Mat &destinationImage)
+{
+	if (destinationImage.empty())
+		destinationImage = Mat(sourceImage.rows, sourceImage.cols, sourceImage.type());
+
+	for (int y = 0; y < sourceImage.rows; ++y){
+		for (int x = 0; x < sourceImage.cols; ++x){
+			int vR = sourceImage.at<Vec3b>(y, x)[0];
+            int vG = sourceImage.at<Vec3b>(y, x)[1];
+            int vB = sourceImage.at<Vec3b>(y, x)[2];
+
+			destinationImage.at<Vec3b>(y, x)[0] = int(0.299*vR + 0.587*vG + 0.114*vB);
+			destinationImage.at<Vec3b>(y, x)[1] = int(0.596*vR - 0.275*vG - 0.321*vB);
+			destinationImage.at<Vec3b>(y, x)[2] = int(0.212*vR - 0.523*vG + 0.311*vB);
+		}
+		
+	}
+}
+
 void gray2threshold(const Mat &sourceImage, Mat &binImage, uint8_t threshold_value){
   /* 
   	Last param is type
@@ -64,3 +86,5 @@ void gray2threshold(const Mat &sourceImage, Mat &binImage, uint8_t threshold_val
   threshold( sourceImage, binImage, threshold_value, 255,0 );
 
 }
+
+#endif

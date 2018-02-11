@@ -1,13 +1,5 @@
-#include <iostream>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-
 /* Developed routines*/
 #include "rutinasVision.h"
-
-using namespace std; 
-using namespace cv;
 
 Mat currentImage;
 Mat flippedImage;
@@ -41,17 +33,15 @@ void mCoordinatesComponentVal(int event, int x, int y, int flags, void* param)
             vS = hsvImage.at<Vec3b>(y, x)[1];
             vV = hsvImage.at<Vec3b>(y, x)[2];
 
-            // vY = yiqImage.at<Vec3b>(y, x)[0];
-            // vI = yiqImage.at<Vec3b>(y, x)[1];
-            // vQ = yiqImage.at<Vec3b>(y, x)[2];
-
+            vY = yiqImage.at<Vec3b>(y, x)[0];
+            vI = yiqImage.at<Vec3b>(y, x)[1];
+            vQ = yiqImage.at<Vec3b>(y, x)[2];
 
             // Print Coordinates and Values
             cout <<"Pos X: "<<Px<<" Pos Y: "<<Py<<endl;
             cout <<"Valor RGB: ("<<vR<<","<<vG<<","<<vB<<")"<<endl;
             cout <<"Valor HSV: ("<<vH<<","<<vS<<","<<vV<<")"<<endl;
-            //cout <<"Valor YIQ: ("<<vH<<","<<vS<<","<<vV<<")"<<endl;
-
+            cout <<"Valor YIQ: ("<<vY<<","<<vI<<","<<vQ<<")"<<endl;
 
             break;
         case CV_EVENT_MOUSEMOVE:
@@ -68,7 +58,7 @@ void mCoordinatesComponentVal(int event, int x, int y, int flags, void* param)
 
 void trackbarCallBack(int,void*)
 {
-	cout << sliderBinValue << endl;
+	cout << "Binarization threshold: " << sliderBinValue << endl;
 }
 
 int main(int argc, char *argv[])
@@ -107,14 +97,15 @@ int main(int argc, char *argv[])
 
     	/* Calling routines to convert color spaces*/
 		color2gray(currentImage,grayImage);
+		color2yiq(currentImage,yiqImage);
 		cvtColor(currentImage,hsvImage,CV_RGB2HSV);
 		gray2threshold(grayImage,binImage,sliderBinValue);
 
 		/* Show images */
 		imshow("Click", currentImage);
-		//imshow("Grayed",grayImage);
+		imshow("Grayed",grayImage);
 		imshow("HSV",hsvImage);
-		//imshow("YIQ",yiqImage);
+		imshow("YIQ",yiqImage);
 		imshow("Gray Binarizacion", binImage);
 
 
@@ -135,4 +126,5 @@ int main(int argc, char *argv[])
 
 void flipImageBasic(const Mat &sourceImage, Mat &destinationImage);
 void color2gray(const Mat &sourceImage, Mat &grayImage);
+void color2yiq(const Mat &sourceImage, Mat &destinationImage);
 void showMenu();

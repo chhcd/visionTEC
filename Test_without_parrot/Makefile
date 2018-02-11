@@ -2,7 +2,7 @@ CC = g++
 OPENCVLINKS = `pkg-config --cflags --libs opencv`
 
 
-all: main headers 
+all: headers main
 
 main: etapa1.cpp
 	$(CC) -o main etapa1.cpp  $(OPENCVLINKS) 
