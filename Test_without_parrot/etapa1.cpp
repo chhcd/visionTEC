@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 		imshow("YIQ",yiqImage);
 		imshow("Gray Binarizacion", binImage);
 
-		imageHistogram(currentImage);
+		imageHistogram("RGB histogram", currentImage);
 
 		uint8_t key = waitKey(3);
 		switch (key)

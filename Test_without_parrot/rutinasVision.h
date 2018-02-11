@@ -8,12 +8,6 @@
 using namespace std;
 using namespace cv;
 
-
-
-
-
-
-
 void showMenu()
 {
 	cout << "\n\n+---------------------- USER INTERFACE ----------------------+\n\n";
@@ -87,7 +81,7 @@ void gray2threshold(const Mat &sourceImage, Mat &binImage, uint8_t threshold_val
 
 }
 
-void imageHistogram(const Mat &src)
+void imageHistogram(const string winName, const Mat &src)
 {
   /// Separate the image in 3 places ( B, G and R )
   vector<Mat> bgr_planes;
@@ -113,7 +107,7 @@ void imageHistogram(const Mat &src)
   int hist_w = 512; int hist_h = 400;
   int bin_w = cvRound( (double) hist_w/histSize );
 
-  Mat histImage( hist_h, hist_w, CV_8UC3, Scalar( 0,0,0) );
+  Mat histImage( hist_h + 210, hist_w, CV_8UC3, Scalar( 255,255,255) );
 
   /// Normalize the result to [ 0, histImage.rows ]
   normalize(b_hist, b_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
@@ -134,9 +128,31 @@ void imageHistogram(const Mat &src)
                        Scalar( 0, 0, 255), 2, 8, 0  );
   }
 
+  /// Gray line divisor
+  for(int y = hist_h; y < hist_h + 20; y++)
+  {
+  	  for(int x = 0; x < hist_w; x++)
+  	  {
+	  	  histImage.at<Vec3b>(y, x) = Vec3b(200,200,200);
+	  	  histImage.at<Vec3b>(y + 70, x) = Vec3b(200,200,200);
+	  	  histImage.at<Vec3b>(y + 140, x) = Vec3b(200,200,200);
+  	  }
+  }
+
+  /// Channel gradients
+  for(int y = hist_h + 20; y < hist_h + 70; y++)
+  {
+  	  for(int x = 0; x < hist_w; x++)
+  	  {
+	  	  histImage.at<Vec3b>(y, x) = Vec3b(0,0,x/2);
+	  	  histImage.at<Vec3b>(y + 70, x) = Vec3b(0,x/2,0);
+	  	  histImage.at<Vec3b>(y + 140, x) = Vec3b(x/2,0,0);
+  	  }
+  }
+
   /// Display
-  namedWindow("calcHist Demo", CV_WINDOW_AUTOSIZE );
-  imshow("calcHist Demo", histImage );
+  namedWindow(winName, CV_WINDOW_AUTOSIZE );
+  imshow(winName, histImage );
 }
 
 #endif
