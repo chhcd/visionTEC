@@ -1,33 +1,34 @@
 /* Developed routines*/
 #include "rutinasVision.h"
 
-Mat currentImage;
-Mat flippedImage;
-Mat grayImage;
+Mat bgrImage;
+Mat bgrHistogram;
 Mat hsvImage;
+Mat hsvHistogram;
 Mat yiqImage;
+Mat yiqHistogram;
+Mat grayImage;
 Mat binImage;
 
+int Px=0, Py=0;
+int vR=0, vG=0, vB=0;
+int vH=0, vS=0, vV=0;
+int vY=0, vI=0, vQ=0;
 
 int sliderBinValue;
 int const SLIDER_MAX = 255;
 
 void mCoordinatesComponentVal(int event, int x, int y, int flags, void* param)
 {
-	int Px,Py;
-	int vR,vG,vB;
-	int vH,vS,vV;
-	int vY,vI,vQ;
-
     switch (event)
     {
         case CV_EVENT_LBUTTONDOWN:
             Px=x;
             Py=y;
             
-            vB = currentImage.at<Vec3b>(y, x)[0];
-            vG = currentImage.at<Vec3b>(y, x)[1];
-            vR = currentImage.at<Vec3b>(y, x)[2];
+            vB = bgrImage.at<Vec3b>(y, x)[0];
+            vG = bgrImage.at<Vec3b>(y, x)[1];
+            vR = bgrImage.at<Vec3b>(y, x)[2];
 
             vH = hsvImage.at<Vec3b>(y, x)[0];
             vS = hsvImage.at<Vec3b>(y, x)[1];
@@ -49,9 +50,7 @@ void mCoordinatesComponentVal(int event, int x, int y, int flags, void* param)
         case CV_EVENT_LBUTTONUP:
             break;
         case CV_EVENT_RBUTTONDOWN:
-        //flag=!flag;
             break;
-        
     }
 	
 }
@@ -85,12 +84,12 @@ int main(int argc, char *argv[])
 
 		if(!freezeImage){
 			/* Obtain a new frame from camera */
-			camera.read(currentImage);
+			camera.read(bgrImage);
 
 	    	/* Calling routines to convert color spaces*/
-			color2gray(currentImage,grayImage);
-			color2yiq(currentImage,yiqImage);
-			cvtColor(currentImage,hsvImage,CV_BGR2HSV);
+			color2gray(bgrImage,grayImage);
+			color2yiq(bgrImage,yiqImage);
+			cvtColor(bgrImage,hsvImage,CV_BGR2HSV);
 		}
 
 		/* Show images */
@@ -98,20 +97,63 @@ int main(int argc, char *argv[])
 		{
 			namedWindow("RGB");
 			setMouseCallback("RGB", mCoordinatesComponentVal);
-			imshow("RGB", currentImage);
-			imageHistogram("RGB Histogram", currentImage);
+			imshow("RGB", bgrImage);
+			imageHistogram(bgrImage, bgrHistogram);
+
+			Mat overlay;
+			bgrHistogram.copyTo(overlay);
+			rectangle(overlay, Rect(2*vB,0,2,400), Scalar(255,0,0), -1);
+			rectangle(overlay, Rect(2*vB,420,2,50), Scalar(255,255,255), -1);
+			rectangle(overlay, Rect(2*vG,0,2,400), Scalar(0,255,0), -1);
+			rectangle(overlay, Rect(2*vG,490,2,50), Scalar(255,255,255), -1);
+			rectangle(overlay, Rect(2*vR,0,2,400), Scalar(0,0,255), -1);
+			rectangle(overlay, Rect(2*vR,560,2,50), Scalar(255,255,255), -1);
+			addWeighted(overlay, 0.7, bgrHistogram, 0.3, 0, bgrHistogram);
+
+			namedWindow("RGB Histogram", CV_WINDOW_AUTOSIZE);
+			imshow("RGB Histogram", bgrHistogram);
 		}
 
 		if (bEnHSV)
 		{
+			namedWindow("HSV");
+			setMouseCallback("HSV", mCoordinatesComponentVal);
 			imshow("HSV", hsvImage);
-			// imageHistogram("HSV Histogram", hsvImage);
+			imageHistogram(hsvImage, hsvHistogram);
+
+			Mat overlay;
+			hsvHistogram.copyTo(overlay);
+			rectangle(overlay, Rect(2*vH,0,2,400), Scalar(255,0,0), -1);
+			rectangle(overlay, Rect(2*vH,420,2,50), Scalar(255,255,255), -1);
+			rectangle(overlay, Rect(2*vS,0,2,400), Scalar(0,255,0), -1);
+			rectangle(overlay, Rect(2*vS,490,2,50), Scalar(255,255,255), -1);
+			rectangle(overlay, Rect(2*vV,0,2,400), Scalar(0,0,255), -1);
+			rectangle(overlay, Rect(2*vV,560,2,50), Scalar(255,255,255), -1);
+			addWeighted(overlay, 0.7, hsvHistogram, 0.3, 0, hsvHistogram);
+
+			namedWindow("HSV Histogram", CV_WINDOW_AUTOSIZE);
+			imshow("HSV Histogram", hsvHistogram);
 		}
 
 		if (bEnYIQ)
 		{
+			namedWindow("YIQ");
+			setMouseCallback("YIQ", mCoordinatesComponentVal);
 			imshow("YIQ", yiqImage);
-			// imageHistogram("YIQ Histogram", yiqImage);
+			imageHistogram(yiqImage, yiqHistogram);
+
+			Mat overlay;
+			yiqHistogram.copyTo(overlay);
+			rectangle(overlay, Rect(2*vY,0,2,400), Scalar(255,0,0), -1);
+			rectangle(overlay, Rect(2*vY,420,2,50), Scalar(255,255,255), -1);
+			rectangle(overlay, Rect(2*vI,0,2,400), Scalar(0,255,0), -1);
+			rectangle(overlay, Rect(2*vI,490,2,50), Scalar(255,255,255), -1);
+			rectangle(overlay, Rect(2*vQ,0,2,400), Scalar(0,0,255), -1);
+			rectangle(overlay, Rect(2*vQ,560,2,50), Scalar(255,255,255), -1);
+			addWeighted(overlay, 0.7, yiqHistogram, 0.3, 0, yiqHistogram);
+
+			namedWindow("YIQ Histogram", CV_WINDOW_AUTOSIZE);
+			imshow("YIQ Histogram", yiqHistogram);
 		}
 
 		if (bEnBinarization)
@@ -155,6 +197,5 @@ int main(int argc, char *argv[])
 				bEnBinarization = !bEnBinarization;
 				break;
 		}
-
 	}
 }

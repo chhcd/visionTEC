@@ -78,11 +78,11 @@ void gray2threshold(const Mat &sourceImage, Mat &binImage, uint8_t threshold_val
 
 }
 
-void imageHistogram(const string winName, const Mat &src)
+void imageHistogram(const Mat &sourceImage, Mat &destinationImage)
 {
   /// Separate the image in 3 places ( B, G and R )
   vector<Mat> bgr_planes;
-  split( src, bgr_planes );
+  split( sourceImage, bgr_planes );
 
   /// Establish the number of bins
   int histSize = 256;
@@ -104,7 +104,7 @@ void imageHistogram(const string winName, const Mat &src)
   int hist_w = 512; int hist_h = 400;
   int bin_w = cvRound( (double) hist_w/histSize );
 
-  Mat histImage( hist_h + 210, hist_w, CV_8UC3, Scalar( 255,255,255) );
+  Mat histImage( hist_h + 210, hist_w, CV_8UC3, Scalar( 0,0,0) );
 
   /// Normalize the result to [ 0, histImage.rows ]
   normalize(b_hist, b_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
@@ -141,15 +141,13 @@ void imageHistogram(const string winName, const Mat &src)
   {
   	  for(int x = 0; x < hist_w; x++)
   	  {
-	  	  histImage.at<Vec3b>(y, x) = Vec3b(0,0,x/2);
+	  	  histImage.at<Vec3b>(y, x) = Vec3b(x/2,0,0);
 	  	  histImage.at<Vec3b>(y + 70, x) = Vec3b(0,x/2,0);
-	  	  histImage.at<Vec3b>(y + 140, x) = Vec3b(x/2,0,0);
+	  	  histImage.at<Vec3b>(y + 140, x) = Vec3b(0,0,x/2);
   	  }
   }
 
-  /// Display
-  namedWindow(winName, CV_WINDOW_AUTOSIZE );
-  imshow(winName, histImage );
+  destinationImage = histImage;
 }
 
 #endif
