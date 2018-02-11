@@ -115,6 +115,8 @@ int main(int argc, char *argv[])
 		{
 			/* Exit -> 'ESC' key */
 			case 'x':
+			case 27:
+				cout << "Terminating program" << endl;
 				bContinue = false;
 				break;
 			case 'p':
