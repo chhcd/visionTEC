@@ -8,12 +8,6 @@
 using namespace std;
 using namespace cv;
 
-void showMenu()
-{
-	cout << "\n\n+---------------------- USER INTERFACE ----------------------+\n\n";
-	cout << "P. Cambiar Modo continuo/ Modo congelado\n";
-	cout << "X. Terminar\n";
-}
 /*
  * This method flips horizontally the sourceImage into destinationImage. Because it uses 
  * "Mat::at" method, its performance is low (redundant memory access searching for pixels).
@@ -32,8 +26,11 @@ void flipImageBasic(const Mat &sourceImage, Mat &destinationImage)
 			}
 }
 
-void color2gray(const Mat &sourceImage, Mat &grayImage)
+void color2gray(const Mat &sourceImage, Mat &destinationImage)
 {
+	if (destinationImage.empty())
+		destinationImage = Mat(sourceImage.rows, sourceImage.cols, CV_8UC1);
+
 	int grayValue = 0;
 	for (int y = 0; y < sourceImage.rows; ++y){
 		for (int x = 0; x < sourceImage.cols ; ++x){
@@ -42,7 +39,7 @@ void color2gray(const Mat &sourceImage, Mat &grayImage)
 			{
 				grayValue += sourceImage.at<Vec3b>(y, x)[i] ;
 			}
-			grayImage.at<uint8_t>(y,x) = grayValue/3;
+			destinationImage.at<uint8_t>(y,x) = grayValue/3;
 		}
 		
 	}
@@ -91,7 +88,7 @@ void imageHistogram(const string winName, const Mat &src)
   int histSize = 256;
 
   /// Set the ranges ( for B,G,R) )
-  float range[] = { 0, 255 } ;
+  float range[] = { 0, 256 } ;
   const float* histRange = { range };
 
   bool uniform = true; bool accumulate = false;
