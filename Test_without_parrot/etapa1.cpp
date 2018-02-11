@@ -25,9 +25,9 @@ void mCoordinatesComponentVal(int event, int x, int y, int flags, void* param)
             Px=x;
             Py=y;
             
-            vR = currentImage.at<Vec3b>(y, x)[0];
+            vB = currentImage.at<Vec3b>(y, x)[0];
             vG = currentImage.at<Vec3b>(y, x)[1];
-            vB = currentImage.at<Vec3b>(y, x)[2];
+            vR = currentImage.at<Vec3b>(y, x)[2];
 
             vH = hsvImage.at<Vec3b>(y, x)[0];
             vS = hsvImage.at<Vec3b>(y, x)[1];
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     	/* Calling routines to convert color spaces*/
 		color2gray(currentImage,grayImage);
 		color2yiq(currentImage,yiqImage);
-		cvtColor(currentImage,hsvImage,CV_RGB2HSV);
+		cvtColor(currentImage,hsvImage,CV_BGR2HSV);
 		gray2threshold(grayImage,binImage,sliderBinValue);
 
 		/* Show images */
@@ -108,6 +108,7 @@ int main(int argc, char *argv[])
 		imshow("YIQ",yiqImage);
 		imshow("Gray Binarizacion", binImage);
 
+		imageHistogram(currentImage);
 
 		uint8_t key = waitKey(3);
 		switch (key)
@@ -123,8 +124,3 @@ int main(int argc, char *argv[])
 
 	}
 }
-
-void flipImageBasic(const Mat &sourceImage, Mat &destinationImage);
-void color2gray(const Mat &sourceImage, Mat &grayImage);
-void color2yiq(const Mat &sourceImage, Mat &destinationImage);
-void showMenu();
