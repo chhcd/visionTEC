@@ -8,24 +8,6 @@
 using namespace std;
 using namespace cv;
 
-/*
- * This method flips horizontally the sourceImage into destinationImage. Because it uses 
- * "Mat::at" method, its performance is low (redundant memory access searching for pixels).
- */
-void flipImageBasic(const Mat &sourceImage, Mat &destinationImage)
-{
-	if (destinationImage.empty())
-		destinationImage = Mat(sourceImage.rows, sourceImage.cols, sourceImage.type());
-
-	for (int y = 0; y < sourceImage.rows; ++y)
-		for (int x = 0; x < sourceImage.cols / 2; ++x)
-			for (int i = 0; i < sourceImage.channels(); ++i)
-			{
-				destinationImage.at<Vec3b>(y, x)[i] = sourceImage.at<Vec3b>(y, sourceImage.cols - 1 - x)[i];
-				destinationImage.at<Vec3b>(y, sourceImage.cols - 1 - x)[i] = sourceImage.at<Vec3b>(y, x)[i];
-			}
-}
-
 void color2gray(const Mat &sourceImage, Mat &destinationImage)
 {
 	if (destinationImage.empty())
@@ -41,7 +23,6 @@ void color2gray(const Mat &sourceImage, Mat &destinationImage)
 			}
 			destinationImage.at<uint8_t>(y,x) = grayValue/3;
 		}
-		
 	}
 }
 
@@ -60,7 +41,25 @@ void color2yiq(const Mat &sourceImage, Mat &destinationImage)
 			destinationImage.at<Vec3b>(y, x)[1] = int(0.596*vR - 0.275*vG - 0.321*vB);
 			destinationImage.at<Vec3b>(y, x)[2] = int(0.212*vR - 0.523*vG + 0.311*vB);
 		}
-		
+	}
+}
+
+void colorFilter(const Mat &sourceImage, Mat &destinationImage, int range[6])
+{
+	if (destinationImage.empty())
+		destinationImage = Mat(sourceImage.rows, sourceImage.cols, sourceImage.type());
+
+	for (int y = 0; y < sourceImage.rows; ++y){
+		for (int x = 0; x < sourceImage.cols; ++x){
+			int v0 = sourceImage.at<Vec3b>(y, x)[0];
+            int v1 = sourceImage.at<Vec3b>(y, x)[1];
+            int v2 = sourceImage.at<Vec3b>(y, x)[2];
+
+            if(v0 >= range[0] && v0 <= range[1] && v1 >= range[2] && v1 <= range[3] && v2 >= range[4] && v2 <= range[5])
+            	destinationImage.at<Vec3b>(y, x) = sourceImage.at<Vec3b>(y, x);
+            else
+            	destinationImage.at<Vec3b>(y, x) = Vec3b(0,0,0);
+		}
 	}
 }
 
@@ -75,7 +74,6 @@ void gray2threshold(const Mat &sourceImage, Mat &binImage, uint8_t threshold_val
    */
 
   threshold( sourceImage, binImage, threshold_value, 255,0 );
-
 }
 
 void imageHistogram(const Mat &sourceImage, Mat &destinationImage)

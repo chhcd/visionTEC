@@ -1,21 +1,33 @@
 /* Developed routines*/
 #include "rutinasVision.h"
 
+/* Declaring all the image matrices */
 Mat bgrImage;
 Mat bgrHistogram;
+Mat bgrFilter;
 Mat hsvImage;
 Mat hsvHistogram;
+Mat hsvFilter;
 Mat yiqImage;
 Mat yiqHistogram;
+Mat yiqFilter;
 Mat grayImage;
 Mat binImage;
 
+/* Setting the pixel coordinates and values in the different color models */
 int Px=0, Py=0;
-int vR=0, vG=0, vB=0;
+int vB=0, vG=0, vR=0;
 int vH=0, vS=0, vV=0;
 int vY=0, vI=0, vQ=0;
 
-int sliderBinValue;
+/* Setting the color mode range for the filter
+   It's divided by channel 0 min, channel 0 max, channel 1 min, channel 1 max, channel 2 min, channel 2 max */
+int rBGR[] = {0, 255, 0, 255, 0, 255};
+int rHSV[] = {0, 255, 0, 255, 0, 255};
+int rYIQ[] = {0, 255, 0, 255, 0, 255};
+
+/* Slider values for binarization */
+int sliderBinValue=0;
 int const SLIDER_MAX = 255;
 
 void mCoordinatesComponentVal(int event, int x, int y, int flags, void* param)
@@ -98,8 +110,8 @@ int main(int argc, char *argv[])
 			namedWindow("RGB");
 			setMouseCallback("RGB", mCoordinatesComponentVal);
 			imshow("RGB", bgrImage);
-			imageHistogram(bgrImage, bgrHistogram);
 
+			imageHistogram(bgrImage, bgrHistogram);
 			Mat overlay;
 			bgrHistogram.copyTo(overlay);
 			rectangle(overlay, Rect(2*vB,0,2,400), Scalar(255,0,0), -1);
@@ -109,9 +121,18 @@ int main(int argc, char *argv[])
 			rectangle(overlay, Rect(2*vR,0,2,400), Scalar(0,0,255), -1);
 			rectangle(overlay, Rect(2*vR,560,2,50), Scalar(255,255,255), -1);
 			addWeighted(overlay, 0.7, bgrHistogram, 0.3, 0, bgrHistogram);
-
 			namedWindow("RGB Histogram", CV_WINDOW_AUTOSIZE);
 			imshow("RGB Histogram", bgrHistogram);
+
+			namedWindow("RGB Filter");
+			colorFilter(bgrImage, bgrFilter, rBGR);
+			createTrackbar( "B Min Value", "RGB Filter", &rBGR[0], SLIDER_MAX, NULL);
+			createTrackbar( "B Max Value", "RGB Filter", &rBGR[1], SLIDER_MAX, NULL);
+			createTrackbar( "G Min Value", "RGB Filter", &rBGR[2], SLIDER_MAX, NULL);
+			createTrackbar( "G Max Value", "RGB Filter", &rBGR[3], SLIDER_MAX, NULL);
+			createTrackbar( "R Min Value", "RGB Filter", &rBGR[4], SLIDER_MAX, NULL);
+			createTrackbar( "R Max Value", "RGB Filter", &rBGR[5], SLIDER_MAX, NULL);
+			imshow("RGB Filter", bgrFilter);
 		}
 
 		if (bEnHSV)
@@ -119,8 +140,8 @@ int main(int argc, char *argv[])
 			namedWindow("HSV");
 			setMouseCallback("HSV", mCoordinatesComponentVal);
 			imshow("HSV", hsvImage);
-			imageHistogram(hsvImage, hsvHistogram);
 
+			imageHistogram(hsvImage, hsvHistogram);
 			Mat overlay;
 			hsvHistogram.copyTo(overlay);
 			rectangle(overlay, Rect(2*vH,0,2,400), Scalar(255,0,0), -1);
@@ -130,9 +151,18 @@ int main(int argc, char *argv[])
 			rectangle(overlay, Rect(2*vV,0,2,400), Scalar(0,0,255), -1);
 			rectangle(overlay, Rect(2*vV,560,2,50), Scalar(255,255,255), -1);
 			addWeighted(overlay, 0.7, hsvHistogram, 0.3, 0, hsvHistogram);
-
 			namedWindow("HSV Histogram", CV_WINDOW_AUTOSIZE);
 			imshow("HSV Histogram", hsvHistogram);
+
+			namedWindow("HSV Filter");
+			colorFilter(hsvImage, hsvFilter, rHSV);
+			createTrackbar( "H Min Value", "HSV Filter", &rHSV[0], SLIDER_MAX, NULL);
+			createTrackbar( "H Max Value", "HSV Filter", &rHSV[1], SLIDER_MAX, NULL);
+			createTrackbar( "S Min Value", "HSV Filter", &rHSV[2], SLIDER_MAX, NULL);
+			createTrackbar( "S Max Value", "HSV Filter", &rHSV[3], SLIDER_MAX, NULL);
+			createTrackbar( "V Min Value", "HSV Filter", &rHSV[4], SLIDER_MAX, NULL);
+			createTrackbar( "V Max Value", "HSV Filter", &rHSV[5], SLIDER_MAX, NULL);
+			imshow("HSV Filter", hsvFilter);
 		}
 
 		if (bEnYIQ)
@@ -140,8 +170,8 @@ int main(int argc, char *argv[])
 			namedWindow("YIQ");
 			setMouseCallback("YIQ", mCoordinatesComponentVal);
 			imshow("YIQ", yiqImage);
-			imageHistogram(yiqImage, yiqHistogram);
 
+			imageHistogram(yiqImage, yiqHistogram);
 			Mat overlay;
 			yiqHistogram.copyTo(overlay);
 			rectangle(overlay, Rect(2*vY,0,2,400), Scalar(255,0,0), -1);
@@ -151,9 +181,18 @@ int main(int argc, char *argv[])
 			rectangle(overlay, Rect(2*vQ,0,2,400), Scalar(0,0,255), -1);
 			rectangle(overlay, Rect(2*vQ,560,2,50), Scalar(255,255,255), -1);
 			addWeighted(overlay, 0.7, yiqHistogram, 0.3, 0, yiqHistogram);
-
 			namedWindow("YIQ Histogram", CV_WINDOW_AUTOSIZE);
 			imshow("YIQ Histogram", yiqHistogram);
+
+			namedWindow("YIQ Filter");
+			colorFilter(yiqImage, yiqFilter, rYIQ);
+			createTrackbar( "Y Min Value", "YIQ Filter", &rYIQ[0], SLIDER_MAX, NULL);
+			createTrackbar( "Y Max Value", "YIQ Filter", &rYIQ[1], SLIDER_MAX, NULL);
+			createTrackbar( "I Min Value", "YIQ Filter", &rYIQ[2], SLIDER_MAX, NULL);
+			createTrackbar( "I Max Value", "YIQ Filter", &rYIQ[3], SLIDER_MAX, NULL);
+			createTrackbar( "Q Min Value", "YIQ Filter", &rYIQ[4], SLIDER_MAX, NULL);
+			createTrackbar( "Q Max Value", "YIQ Filter", &rYIQ[5], SLIDER_MAX, NULL);
+			imshow("YIQ Filter", yiqFilter);
 		}
 
 		if (bEnBinarization)
@@ -161,9 +200,7 @@ int main(int argc, char *argv[])
 			/* Create Trackbar */
 			gray2threshold(grayImage,binImage,sliderBinValue);
 			namedWindow("Gray Binarization",1);
-			Mat trackImage = Mat::zeros(Size(500,30),CV_8UC1);
-			imshow("Gray Binarization",trackImage);
-			createTrackbar( "Valor de binarizacion", "Gray Binarization", &sliderBinValue, SLIDER_MAX, NULL );
+			createTrackbar( "Binatization threshold", "Gray Binarization", &sliderBinValue, SLIDER_MAX, NULL);
 			imshow("Gray", grayImage);
 			imshow("Gray Binarization", binImage);
 		}
@@ -181,15 +218,15 @@ int main(int argc, char *argv[])
 				freezeImage = !freezeImage;
 				break;
 			case 'r':
-				if(bEnRGB){ destroyWindow("RGB"); destroyWindow("RGB Histogram"); }
+				if(bEnRGB){ destroyWindow("RGB"); destroyWindow("RGB Histogram"); destroyWindow("RGB Filter"); }
 				bEnRGB = !bEnRGB;
 				break;
 			case 'h':
-				if(bEnHSV){ destroyWindow("HSV"); destroyWindow("HSV Histogram"); }
+				if(bEnHSV){ destroyWindow("HSV"); destroyWindow("HSV Histogram"); destroyWindow("HSV Filter"); }
 				bEnHSV = !bEnHSV;
 				break;
 			case 'y':
-				if(bEnYIQ){ destroyWindow("YIQ"); destroyWindow("YIQ Histogram"); }
+				if(bEnYIQ){ destroyWindow("YIQ"); destroyWindow("YIQ Histogram"); destroyWindow("YIQ Filter"); }
 				bEnYIQ = !bEnYIQ;
 				break;
 			case 'b':
