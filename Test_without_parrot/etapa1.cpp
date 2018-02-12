@@ -13,6 +13,11 @@ Mat yiqHistogram;
 Mat yiqFilter;
 Mat grayImage;
 Mat binImage;
+Mat snapedMat;
+
+bool bSnap = false;
+bool firstClick = true;
+int rObjPoints[] = {0,0,0,0};
 
 /* Setting the pixel coordinates and values in the different color models */
 int Px=0, Py=0;
@@ -25,6 +30,10 @@ int vY=0, vI=0, vQ=0;
 int rBGR[] = {0, 255, 0, 255, 0, 255};
 int rHSV[] = {0, 255, 0, 255, 0, 255};
 int rYIQ[] = {0, 255, 0, 255, 0, 255};
+
+bool bEnRGB = false;
+bool bEnYIQ = false;
+bool bEnHSV = false;
 
 /* Slider values for binarization */
 int sliderBinValue=0;
@@ -67,6 +76,74 @@ void mCoordinatesComponentVal(int event, int x, int y, int flags, void* param)
 	
 }
 
+void mSnapObj(int event, int x, int y, int flags, void* param)
+{
+	int iDelta = 30;
+    switch (event)
+    {
+        case CV_EVENT_LBUTTONDOWN:
+        	if(firstClick)
+        	{
+        		
+        		line(snapedMat, Point(x,y), Point(x,y+20), CV_RGB(255,0,255),1,8,0);
+        		line(snapedMat, Point(x,y), Point(x+20,y), CV_RGB(0,255,255),1,8,0);
+        		imshow("Snaped",snapedMat);
+        		firstClick = false;
+        		rObjPoints[0] = x;
+        		rObjPoints[1] = y;
+        		// Print Coordinates and Values
+	            waitKey(0);
+        	}
+        	else
+        	{
+        		line(snapedMat, Point(x,y), Point(x,y-20), CV_RGB(255,0,255),1,8,0);
+        		line(snapedMat, Point(x,y), Point(x-20,y), CV_RGB(0,255,255),1,8,0);
+        		imshow("Snaped",snapedMat);
+        		rObjPoints[2] = x;
+        		rObjPoints[3] = y;
+
+        		int av0,av1,av2;
+        		regionAvg(bgrImage,rObjPoints[0],rObjPoints[1],rObjPoints[2],rObjPoints[3],av0,av1,av2);
+        		cout <<"Valor PROMEDIO RGB: ("<<av0<<","<<av1<<","<<av2<<")"<<endl;
+
+        		rBGR[0] = av0 - iDelta < 0 ? 	0 : av0 - iDelta;
+        		rBGR[1]	= av0 + iDelta > 255 ? 	255 : av0 + iDelta;
+        		rBGR[2] = av1 - iDelta < 0 ? 	0 : av1 - iDelta;
+        		rBGR[3] = av1 + iDelta > 255 ? 	255 : av1 + iDelta;
+        		rBGR[4] = av2 - iDelta < 0 ? 	0 : av2 - iDelta;
+        		rBGR[5] = av2 + iDelta > 255 ? 	255 : av2 + iDelta;
+
+        		if(bEnHSV){
+	        		regionAvg(hsvImage,rObjPoints[0],rObjPoints[1],rObjPoints[2],rObjPoints[3],av0,av1,av2);
+	        		cout <<"Valor PROMEDIO HSV: ("<<av0<<","<<av1<<","<<av2<<")"<<endl;
+
+	        		rHSV[0] = av0 - iDelta < 0 ? 	0 : av0 - iDelta;
+	        		rHSV[1]	= av0 + iDelta > 255 ? 	255 : av0 + iDelta;
+	        		rHSV[2] = av1 - iDelta < 0 ? 	0 : av1 - iDelta;
+	        		rHSV[3] = av1 + iDelta > 255 ? 	255 : av1 + iDelta;
+	        		rHSV[4] = av2 - iDelta < 0 ? 	0 : av2 - iDelta;
+	        		rHSV[5] = av2 + iDelta > 255 ? 	255 : av2 + iDelta;
+	        	}
+	        	if(bEnYIQ){
+	        		regionAvg(yiqImage,rObjPoints[0],rObjPoints[1],rObjPoints[2],rObjPoints[3],av0,av1,av2);
+	        		cout <<"Valor PROMEDIO YIQ: ("<<av0<<","<<av1<<","<<av2<<")"<<endl;
+
+	        		rYIQ[0] = av0 - iDelta < 0 ? 	0 : av0 - iDelta;
+	        		rYIQ[1]	= av0 + iDelta > 255 ? 	255 : av0 + iDelta;
+	        		rYIQ[2] = av1 - iDelta < 0 ? 	0 : av1 - iDelta;
+	        		rYIQ[3] = av1 + iDelta > 255 ? 	255 : av1 + iDelta;
+	        		rYIQ[4] = av2 - iDelta < 0 ? 	0 : av2 - iDelta;
+	        		rYIQ[5] = av2 + iDelta > 255 ? 	255 : av2 + iDelta;
+	        	}
+
+        		firstClick = true;
+        		waitKey(0);
+        	}
+            break;
+    }
+
+}
+
 int main(int argc, char *argv[])
 {
 	/* Open camera device */
@@ -82,14 +159,12 @@ int main(int argc, char *argv[])
 	putText(menu,"h. Imagen HSV", Point(15,170) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
 	putText(menu,"y. Imagen YIQ", Point(15,210) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
 	putText(menu,"b. Imagen gris / binarizacion", Point(15,250) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
-	putText(menu,"x. Terminar", Point(15,290) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
+	putText(menu,"l. Snap Object", Point(15,290) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
+	putText(menu,"x. Terminar", Point(15,330) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
 	imshow("Menu", menu);
 
 	bool freezeImage = false;
 	bool bContinue = true;
-	bool bEnRGB = false;
-	bool bEnYIQ = false;
-	bool bEnHSV = false;
 	bool bEnBinarization = false;
 	while (bContinue)
 	{
@@ -204,6 +279,15 @@ int main(int argc, char *argv[])
 			imshow("Gray", grayImage);
 			imshow("Gray Binarization", binImage);
 		}
+		if(bSnap)
+		{	
+
+			colorFilter(bgrImage,snapedMat,rBGR);
+			namedWindow("Snaped");
+			setMouseCallback("Snaped",mSnapObj);
+			imshow("Snaped",snapedMat);
+		}
+
 
 		uint8_t key = waitKey(3);
 		switch (key)
@@ -233,6 +317,17 @@ int main(int argc, char *argv[])
 				if(bEnBinarization){ destroyWindow("Gray"); destroyWindow("Gray Binarization"); }
 				bEnBinarization = !bEnBinarization;
 				break;
+			case 'l':
+				if(bSnap){
+					destroyWindow("Snaped"); 
+					rBGR[0]=0 ; rBGR[1]=255; rBGR[2] = 0; rBGR[3] = 255; rBGR[4] = 0; rBGR[5] = 255;
+					rHSV[0]=0 ; rHSV[1]=255; rHSV[2] = 0; rHSV[3] = 255; rHSV[4] = 0; rHSV[5] = 255;
+					rYIQ[0]=0 ; rYIQ[1]=255; rYIQ[2] = 0; rYIQ[3] = 255; rYIQ[4] = 0; rYIQ[5] = 255;
+
+				}
+				bSnap = !bSnap;
+				break;
+
 		}
 	}
 }

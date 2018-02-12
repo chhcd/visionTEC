@@ -76,6 +76,29 @@ void gray2threshold(const Mat &sourceImage, Mat &binImage, uint8_t threshold_val
   threshold( sourceImage, binImage, threshold_value, 255,0 );
 }
 
+
+void regionAvg(const Mat &sourceImage, int x1,int y1, int x2, int y2, int &avrg0, int &avrg1, int &avrg2)
+{
+   avrg0 = 0;
+   avrg1 = 0;
+   avrg2 = 0;
+  for (int y = y1; y < y2; ++y)
+  {
+    for (int x = x1; x < x2; ++x)
+    {
+      avrg0 += sourceImage.at<Vec3b>(y,x)[0];
+      avrg1 += sourceImage.at<Vec3b>(y,x)[1];
+      avrg2 += sourceImage.at<Vec3b>(y,x)[2];
+    }
+  }
+  avrg0 = avrg0/(abs(x2-x1)*abs(y2-y1));
+  avrg1 = avrg1/(abs(x2-x1)*abs(y2-y1));
+  avrg2 = avrg2/(abs(x2-x1)*abs(y2-y1));
+
+
+}
+
+
 void imageHistogram(const Mat &sourceImage, Mat &destinationImage)
 {
   /// Separate the image in 3 places ( B, G and R )
