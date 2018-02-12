@@ -33,15 +33,33 @@ void color2yiq(const Mat &sourceImage, Mat &destinationImage)
 
 	for (int y = 0; y < sourceImage.rows; ++y){
 		for (int x = 0; x < sourceImage.cols; ++x){
-			int vB = sourceImage.at<Vec3b>(y, x)[0];
-            int vG = sourceImage.at<Vec3b>(y, x)[1];
-            int vR = sourceImage.at<Vec3b>(y, x)[2];
+			  int vB = sourceImage.at<Vec3b>(y, x)[0];
+        int vG = sourceImage.at<Vec3b>(y, x)[1];
+        int vR = sourceImage.at<Vec3b>(y, x)[2];
 
-			destinationImage.at<Vec3b>(y, x)[0] = int(0.299*vR + 0.587*vG + 0.114*vB);
-			destinationImage.at<Vec3b>(y, x)[1] = int(0.596*vR - 0.275*vG - 0.321*vB);
-			destinationImage.at<Vec3b>(y, x)[2] = int(0.212*vR - 0.523*vG + 0.311*vB);
+			  destinationImage.at<Vec3b>(y, x)[0] = int(0.299*vR + 0.587*vG + 0.114*vB);
+			  destinationImage.at<Vec3b>(y, x)[1] = int(0.596*vR - 0.275*vG - 0.321*vB);
+			  destinationImage.at<Vec3b>(y, x)[2] = int(0.212*vR - 0.523*vG + 0.311*vB);
 		}
 	}
+}
+
+void yiq2color(const Mat &sourceImage, Mat &destinationImage)
+{
+  if (destinationImage.empty())
+    destinationImage = Mat(sourceImage.rows, sourceImage.cols, sourceImage.type());
+
+  for (int y = 0; y < sourceImage.rows; ++y){
+    for (int x = 0; x < sourceImage.cols; ++x){
+        int vY = sourceImage.at<Vec3b>(y, x)[0];
+        int vI = sourceImage.at<Vec3b>(y, x)[1];
+        int vQ = sourceImage.at<Vec3b>(y, x)[2];
+
+        destinationImage.at<Vec3b>(y, x)[2] = int(1*vY + 0.956*vI + 0.621*vQ);
+        destinationImage.at<Vec3b>(y, x)[1] = int(1*vY - 0.272*vI - 0.647*vQ);
+        destinationImage.at<Vec3b>(y, x)[0] = int(1*vY - 1.107*vI + 0.705*vQ);
+    }
+  }
 }
 
 void colorFilter(const Mat &sourceImage, Mat &destinationImage, int range[6])
@@ -98,8 +116,7 @@ void regionAvg(const Mat &sourceImage, int x1,int y1, int x2, int y2, int &avrg0
 
 }
 
-
-void imageHistogram(const Mat &sourceImage, Mat &destinationImage)
+void imageHistogram(const Mat &sourceImage, Mat &destinationImage, string histogramChannel)
 {
   /// Separate the image in 3 places ( B, G and R )
   vector<Mat> bgr_planes;
@@ -157,14 +174,65 @@ void imageHistogram(const Mat &sourceImage, Mat &destinationImage)
   	  }
   }
 
+  Mat gradients[] = { Mat(50, hist_w, CV_8UC3), Mat(50, hist_w, CV_8UC3), Mat(50, hist_w, CV_8UC3) };
+
+  /// HSV Histogram
+  if(histogramChannel == "HSV")
+  {
+    /// HSV color gradients
+    for(int y = 0; y < 50; y++)
+    {
+        for(int x = 0; x < hist_w; x++)
+        {
+          gradients[0].at<Vec3b>(y, x) = Vec3b(x/2,255,255);
+          gradients[1].at<Vec3b>(y, x) = Vec3b(255,x/2,255);
+          gradients[2].at<Vec3b>(y, x) = Vec3b(255,255,x/2);
+        }
+    }
+
+    cvtColor(gradients[0], gradients[0], CV_HSV2BGR);
+    cvtColor(gradients[1], gradients[1], CV_HSV2BGR);
+    cvtColor(gradients[2], gradients[2], CV_HSV2BGR);
+  }
+  else if(histogramChannel == "YIQ")
+  {
+    /// YIQ color gradients
+    for(int y = 0; y < 50; y++)
+    {
+        for(int x = 0; x < hist_w; x++)
+        {
+          gradients[0].at<Vec3b>(y, x) = Vec3b(x/2,0,0);
+          gradients[1].at<Vec3b>(y, x) = Vec3b(0,x/2,0);
+          gradients[2].at<Vec3b>(y, x) = Vec3b(0,0,x/2);
+        }
+    }
+
+    yiq2color(gradients[0], gradients[0]);
+    yiq2color(gradients[1], gradients[1]);
+    yiq2color(gradients[2], gradients[2]);
+  }
+  else
+  {
+    /// RGB color gradients
+    for(int y = 0; y < 50; y++)
+    {
+        for(int x = 0; x < hist_w; x++)
+        {
+          gradients[0].at<Vec3b>(y, x) = Vec3b(x/2,0,0);
+          gradients[1].at<Vec3b>(y, x) = Vec3b(0,x/2,0);
+          gradients[2].at<Vec3b>(y, x) = Vec3b(0,0,x/2);
+        }
+    }
+  }
+
   /// Channel gradients
   for(int y = hist_h + 20; y < hist_h + 70; y++)
   {
   	  for(int x = 0; x < hist_w; x++)
   	  {
-	  	  histImage.at<Vec3b>(y, x) = Vec3b(x/2,0,0);
-	  	  histImage.at<Vec3b>(y + 70, x) = Vec3b(0,x/2,0);
-	  	  histImage.at<Vec3b>(y + 140, x) = Vec3b(0,0,x/2);
+	  	  histImage.at<Vec3b>(y, x) = gradients[0].at<Vec3b>(y - hist_h - 20, x);
+	  	  histImage.at<Vec3b>(y + 70, x) = gradients[1].at<Vec3b>(y - hist_h - 20, x);
+	  	  histImage.at<Vec3b>(y + 140, x) = gradients[2].at<Vec3b>(y - hist_h - 20, x);
   	  }
   }
 

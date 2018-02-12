@@ -275,7 +275,7 @@ int main(int argc,char* argv[])
             setMouseCallback("RGB", mCoordinatesComponentVal);
             imshow("RGB", bgrImage);
 
-            imageHistogram(bgrImage, bgrHistogram);
+            imageHistogram(bgrImage, bgrHistogram, "RGB");
             Mat overlay;
             bgrHistogram.copyTo(overlay);
             rectangle(overlay, Rect(2*vB,0,2,400), Scalar(255,0,0), -1);
@@ -305,7 +305,7 @@ int main(int argc,char* argv[])
             setMouseCallback("HSV", mCoordinatesComponentVal);
             imshow("HSV", hsvImage);
 
-            imageHistogram(hsvImage, hsvHistogram);
+            imageHistogram(hsvImage, hsvHistogram, "HSV");
             Mat overlay;
             hsvHistogram.copyTo(overlay);
             rectangle(overlay, Rect(2*vH,0,2,400), Scalar(255,0,0), -1);
@@ -335,7 +335,7 @@ int main(int argc,char* argv[])
             setMouseCallback("YIQ", mCoordinatesComponentVal);
             imshow("YIQ", yiqImage);
 
-            imageHistogram(yiqImage, yiqHistogram);
+            imageHistogram(yiqImage, yiqHistogram, "YIQ");
             Mat overlay;
             yiqHistogram.copyTo(overlay);
             rectangle(overlay, Rect(2*vY,0,2,400), Scalar(255,0,0), -1);
