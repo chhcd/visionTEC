@@ -23,13 +23,19 @@ using namespace cv;
 
 /* Declaring all the image matrices */
 Mat bgrImage = Mat(240, 320, CV_8UC3);
-Mat bgrHistogram;
+Mat bHistogram;
+Mat gHistogram;
+Mat rHistogram;
 Mat bgrFilter;
 Mat hsvImage;
-Mat hsvHistogram;
+Mat hHistogram;
+Mat sHistogram;
+Mat vHistogram;
 Mat hsvFilter;
 Mat yiqImage;
-Mat yiqHistogram;
+Mat yHistogram;
+Mat iHistogram;
+Mat qHistogram;
 Mat yiqFilter;
 Mat grayImage;
 Mat binImage;
@@ -275,18 +281,32 @@ int main(int argc,char* argv[])
             setMouseCallback("RGB", mCoordinatesComponentVal);
             imshow("RGB", bgrImage);
 
-            imageHistogram(bgrImage, bgrHistogram, "RGB");
-            Mat overlay;
-            bgrHistogram.copyTo(overlay);
-            rectangle(overlay, Rect(2*vB,0,2,400), Scalar(255,0,0), -1);
-            rectangle(overlay, Rect(2*vB,420,2,50), Scalar(255,255,255), -1);
-            rectangle(overlay, Rect(2*vG,0,2,400), Scalar(0,255,0), -1);
-            rectangle(overlay, Rect(2*vG,490,2,50), Scalar(255,255,255), -1);
-            rectangle(overlay, Rect(2*vR,0,2,400), Scalar(0,0,255), -1);
-            rectangle(overlay, Rect(2*vR,560,2,50), Scalar(255,255,255), -1);
-            addWeighted(overlay, 0.7, bgrHistogram, 0.3, 0, bgrHistogram);
-            namedWindow("RGB Histogram", CV_WINDOW_AUTOSIZE);
-            imshow("RGB Histogram", bgrHistogram);
+            imageHistogram(bgrImage, bHistogram, "RGB", 0);
+            Mat overlayB;
+            bHistogram.copyTo(overlayB);
+            rectangle(overlayB, Rect(2*vB,0,2,400), Scalar(255,0,0), -1);
+            rectangle(overlayB, Rect(2*vB,420,2,50), Scalar(255,255,255), -1);
+            addWeighted(overlayB, 0.7, bHistogram, 0.3, 0, bHistogram);
+            namedWindow("Blue Histogram", CV_WINDOW_AUTOSIZE);
+            imshow("Blue Histogram", bHistogram);
+
+            imageHistogram(bgrImage, gHistogram, "RGB", 1);
+            Mat overlayG;
+            gHistogram.copyTo(overlayG);
+            rectangle(overlayG, Rect(2*vG,0,2,400), Scalar(0,255,0), -1);
+            rectangle(overlayG, Rect(2*vG,420,2,50), Scalar(255,255,255), -1);
+            addWeighted(overlayG, 0.7, gHistogram, 0.3, 0, gHistogram);
+            namedWindow("Green Histogram", CV_WINDOW_AUTOSIZE);
+            imshow("Green Histogram", gHistogram);
+
+            imageHistogram(bgrImage, rHistogram, "RGB", 2);
+            Mat overlayR;
+            rHistogram.copyTo(overlayR);
+            rectangle(overlayR, Rect(2*vR,0,2,400), Scalar(0,0,255), -1);
+            rectangle(overlayR, Rect(2*vR,420,2,50), Scalar(255,255,255), -1);
+            addWeighted(overlayR, 0.7, rHistogram, 0.3, 0, rHistogram);
+            namedWindow("Red Histogram", CV_WINDOW_AUTOSIZE);
+            imshow("Red Histogram", rHistogram);
 
             namedWindow("RGB Filter");
             colorFilter(bgrImage, bgrFilter, rBGR);
@@ -305,18 +325,32 @@ int main(int argc,char* argv[])
             setMouseCallback("HSV", mCoordinatesComponentVal);
             imshow("HSV", hsvImage);
 
-            imageHistogram(hsvImage, hsvHistogram, "HSV");
-            Mat overlay;
-            hsvHistogram.copyTo(overlay);
-            rectangle(overlay, Rect(2*vH,0,2,400), Scalar(255,0,0), -1);
-            rectangle(overlay, Rect(2*vH,420,2,50), Scalar(255,255,255), -1);
-            rectangle(overlay, Rect(2*vS,0,2,400), Scalar(0,255,0), -1);
-            rectangle(overlay, Rect(2*vS,490,2,50), Scalar(255,255,255), -1);
-            rectangle(overlay, Rect(2*vV,0,2,400), Scalar(0,0,255), -1);
-            rectangle(overlay, Rect(2*vV,560,2,50), Scalar(255,255,255), -1);
-            addWeighted(overlay, 0.7, hsvHistogram, 0.3, 0, hsvHistogram);
-            namedWindow("HSV Histogram", CV_WINDOW_AUTOSIZE);
-            imshow("HSV Histogram", hsvHistogram);
+            imageHistogram(hsvImage, hHistogram, "HSV", 0);
+            Mat overlayH;
+            hHistogram.copyTo(overlayH);
+            rectangle(overlayH, Rect(2*vH,0,2,400), Scalar(255,0,0), -1);
+            rectangle(overlayH, Rect(2*vH,420,2,50), Scalar(255,255,255), -1);
+            addWeighted(overlayH, 0.7, hHistogram, 0.3, 0, hHistogram);
+            namedWindow("Hue Histogram", CV_WINDOW_AUTOSIZE);
+            imshow("Hue Histogram", hHistogram);
+
+            imageHistogram(hsvImage, sHistogram, "HSV", 1);
+            Mat overlayS;
+            sHistogram.copyTo(overlayS);
+            rectangle(overlayS, Rect(2*vS,0,2,400), Scalar(0,255,0), -1);
+            rectangle(overlayS, Rect(2*vS,420,2,50), Scalar(255,255,255), -1);
+            addWeighted(overlayS, 0.7, sHistogram, 0.3, 0, sHistogram);
+            namedWindow("Saturation Histogram", CV_WINDOW_AUTOSIZE);
+            imshow("Saturation Histogram", sHistogram);
+
+            imageHistogram(hsvImage, vHistogram, "HSV", 2);
+            Mat overlayV;
+            vHistogram.copyTo(overlayV);
+            rectangle(overlayV, Rect(2*vV,0,2,400), Scalar(0,0,255), -1);
+            rectangle(overlayV, Rect(2*vV,420,2,50), Scalar(255,255,255), -1);
+            addWeighted(overlayV, 0.7, vHistogram, 0.3, 0, vHistogram);
+            namedWindow("Value Histogram", CV_WINDOW_AUTOSIZE);
+            imshow("Value Histogram", vHistogram);
 
             namedWindow("HSV Filter");
             colorFilter(hsvImage, hsvFilter, rHSV);
@@ -335,18 +369,32 @@ int main(int argc,char* argv[])
             setMouseCallback("YIQ", mCoordinatesComponentVal);
             imshow("YIQ", yiqImage);
 
-            imageHistogram(yiqImage, yiqHistogram, "YIQ");
-            Mat overlay;
-            yiqHistogram.copyTo(overlay);
-            rectangle(overlay, Rect(2*vY,0,2,400), Scalar(255,0,0), -1);
-            rectangle(overlay, Rect(2*vY,420,2,50), Scalar(255,255,255), -1);
-            rectangle(overlay, Rect(2*vI,0,2,400), Scalar(0,255,0), -1);
-            rectangle(overlay, Rect(2*vI,490,2,50), Scalar(255,255,255), -1);
-            rectangle(overlay, Rect(2*vQ,0,2,400), Scalar(0,0,255), -1);
-            rectangle(overlay, Rect(2*vQ,560,2,50), Scalar(255,255,255), -1);
-            addWeighted(overlay, 0.7, yiqHistogram, 0.3, 0, yiqHistogram);
-            namedWindow("YIQ Histogram", CV_WINDOW_AUTOSIZE);
-            imshow("YIQ Histogram", yiqHistogram);
+            imageHistogram(yiqImage, yHistogram, "YIQ", 0);
+            Mat overlayY;
+            yHistogram.copyTo(overlayY);
+            rectangle(overlayY, Rect(2*vY,0,2,400), Scalar(255,0,0), -1);
+            rectangle(overlayY, Rect(2*vY,420,2,50), Scalar(255,255,255), -1);
+            addWeighted(overlayY, 0.7, yHistogram, 0.3, 0, yHistogram);
+            namedWindow("Luma Histogram", CV_WINDOW_AUTOSIZE);
+            imshow("Luma Histogram", yHistogram);
+
+            imageHistogram(yiqImage, iHistogram, "YIQ", 1);
+            Mat overlayI;
+            iHistogram.copyTo(overlayI);
+            rectangle(overlayI, Rect(2*vI,0,2,400), Scalar(0,255,0), -1);
+            rectangle(overlayI, Rect(2*vI,420,2,50), Scalar(255,255,255), -1);
+            addWeighted(overlayI, 0.7, iHistogram, 0.3, 0, iHistogram);
+            namedWindow("In-phase Histogram", CV_WINDOW_AUTOSIZE);
+            imshow("In-phase Histogram", iHistogram);
+
+            imageHistogram(yiqImage, qHistogram, "YIQ", 2);
+            Mat overlayQ;
+            qHistogram.copyTo(overlayQ);
+            rectangle(overlayQ, Rect(2*vQ,0,2,400), Scalar(0,0,255), -1);
+            rectangle(overlayQ, Rect(2*vQ,420,2,50), Scalar(255,255,255), -1);
+            addWeighted(overlayQ, 0.7, qHistogram, 0.3, 0, qHistogram);
+            namedWindow("Quadrature Histogram", CV_WINDOW_AUTOSIZE);
+            imshow("Quadrature Histogram", qHistogram);
 
             namedWindow("YIQ Filter");
             colorFilter(yiqImage, yiqFilter, rYIQ);

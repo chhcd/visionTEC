@@ -33,15 +33,33 @@ void color2yiq(const Mat &sourceImage, Mat &destinationImage)
 
 	for (int y = 0; y < sourceImage.rows; ++y){
 		for (int x = 0; x < sourceImage.cols; ++x){
-			int vB = sourceImage.at<Vec3b>(y, x)[0];
-            int vG = sourceImage.at<Vec3b>(y, x)[1];
-            int vR = sourceImage.at<Vec3b>(y, x)[2];
+			  int vB = sourceImage.at<Vec3b>(y, x)[0];
+        int vG = sourceImage.at<Vec3b>(y, x)[1];
+        int vR = sourceImage.at<Vec3b>(y, x)[2];
 
-			destinationImage.at<Vec3b>(y, x)[0] = int(0.299*vR + 0.587*vG + 0.114*vB);
-			destinationImage.at<Vec3b>(y, x)[1] = int(0.596*vR - 0.275*vG - 0.321*vB);
-			destinationImage.at<Vec3b>(y, x)[2] = int(0.212*vR - 0.523*vG + 0.311*vB);
+			  destinationImage.at<Vec3b>(y, x)[0] = int(0.299*vR + 0.587*vG + 0.114*vB);
+			  destinationImage.at<Vec3b>(y, x)[1] = int(0.596*vR - 0.275*vG - 0.321*vB);
+			  destinationImage.at<Vec3b>(y, x)[2] = int(0.212*vR - 0.523*vG + 0.311*vB);
 		}
 	}
+}
+
+void yiq2color(const Mat &sourceImage, Mat &destinationImage)
+{
+  if (destinationImage.empty())
+    destinationImage = Mat(sourceImage.rows, sourceImage.cols, sourceImage.type());
+
+  for (int y = 0; y < sourceImage.rows; ++y){
+    for (int x = 0; x < sourceImage.cols; ++x){
+        int vY = sourceImage.at<Vec3b>(y, x)[0];
+        int vI = sourceImage.at<Vec3b>(y, x)[1];
+        int vQ = sourceImage.at<Vec3b>(y, x)[2];
+
+        destinationImage.at<Vec3b>(y, x)[2] = int(1*vY + 0.956*vI + 0.621*vQ);
+        destinationImage.at<Vec3b>(y, x)[1] = int(1*vY - 0.272*vI - 0.647*vQ);
+        destinationImage.at<Vec3b>(y, x)[0] = int(1*vY - 1.107*vI + 0.705*vQ);
+    }
+  }
 }
 
 void colorFilter(const Mat &sourceImage, Mat &destinationImage, int range[6])
@@ -76,6 +94,7 @@ void gray2threshold(const Mat &sourceImage, Mat &binImage, uint8_t threshold_val
   threshold( sourceImage, binImage, threshold_value, 255,0 );
 }
 
+
 void regionAvg(const Mat &sourceImage, int x1,int y1, int x2, int y2, int &avrg0, int &avrg1, int &avrg2)
 {
    avrg0 = 0;
@@ -97,7 +116,7 @@ void regionAvg(const Mat &sourceImage, int x1,int y1, int x2, int y2, int &avrg0
 
 }
 
-void imageHistogram(const Mat &sourceImage, Mat &destinationImage)
+void imageHistogram(const Mat &sourceImage, Mat &destinationImage, string histogramChannel, int channelNum)
 {
   /// Separate the image in 3 places ( B, G and R )
   vector<Mat> bgr_planes;
@@ -112,36 +131,28 @@ void imageHistogram(const Mat &sourceImage, Mat &destinationImage)
 
   bool uniform = true; bool accumulate = false;
 
-  Mat b_hist, g_hist, r_hist;
+  Mat hist;
 
   /// Compute the histograms:
-  calcHist( &bgr_planes[0], 1, 0, Mat(), b_hist, 1, &histSize, &histRange, uniform, accumulate );
-  calcHist( &bgr_planes[1], 1, 0, Mat(), g_hist, 1, &histSize, &histRange, uniform, accumulate );
-  calcHist( &bgr_planes[2], 1, 0, Mat(), r_hist, 1, &histSize, &histRange, uniform, accumulate );
+  calcHist( &bgr_planes[channelNum], 1, 0, Mat(), hist, 1, &histSize, &histRange, uniform, accumulate );
 
   // Draw the histograms for B, G and R
   int hist_w = 512; int hist_h = 400;
   int bin_w = cvRound( (double) hist_w/histSize );
 
-  Mat histImage( hist_h + 210, hist_w, CV_8UC3, Scalar( 0,0,0) );
+  Mat histImage( hist_h + 70, hist_w, CV_8UC3, Scalar( 0,0,0) );
 
   /// Normalize the result to [ 0, histImage.rows ]
-  normalize(b_hist, b_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
-  normalize(g_hist, g_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
-  normalize(r_hist, r_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
+  normalize(hist, hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
+
+  Scalar lineColor = (channelNum == 0) ? Scalar(255,0,0) : ( (channelNum == 1) ? Scalar(0,255,0) : Scalar(0,0,255) );
 
   /// Draw for each channel
   for( int i = 1; i < histSize; i++ )
   {
-      line( histImage, Point( bin_w*(i-1), hist_h - cvRound(b_hist.at<float>(i-1)) ) ,
-                       Point( bin_w*(i), hist_h - cvRound(b_hist.at<float>(i)) ),
-                       Scalar( 255, 0, 0), 2, 8, 0  );
-      line( histImage, Point( bin_w*(i-1), hist_h - cvRound(g_hist.at<float>(i-1)) ) ,
-                       Point( bin_w*(i), hist_h - cvRound(g_hist.at<float>(i)) ),
-                       Scalar( 0, 255, 0), 2, 8, 0  );
-      line( histImage, Point( bin_w*(i-1), hist_h - cvRound(r_hist.at<float>(i-1)) ) ,
-                       Point( bin_w*(i), hist_h - cvRound(r_hist.at<float>(i)) ),
-                       Scalar( 0, 0, 255), 2, 8, 0  );
+      line( histImage, Point( bin_w*(i-1), hist_h - cvRound(hist.at<float>(i-1)) ) ,
+                       Point( bin_w*(i), hist_h - cvRound(hist.at<float>(i)) ),
+                       lineColor, 2, 8, 0  );
   }
 
   /// Gray line divisor
@@ -150,9 +161,48 @@ void imageHistogram(const Mat &sourceImage, Mat &destinationImage)
   	  for(int x = 0; x < hist_w; x++)
   	  {
 	  	  histImage.at<Vec3b>(y, x) = Vec3b(200,200,200);
-	  	  histImage.at<Vec3b>(y + 70, x) = Vec3b(200,200,200);
-	  	  histImage.at<Vec3b>(y + 140, x) = Vec3b(200,200,200);
   	  }
+  }
+
+  Mat gradient = Mat(50, hist_w, CV_8UC3);
+
+  /// HSV Histogram
+  if(histogramChannel == "HSV")
+  {
+    /// HSV color gradients
+    for(int y = 0; y < 50; y++)
+    {
+        for(int x = 0; x < hist_w; x++)
+        {
+          gradient.at<Vec3b>(y, x) = (channelNum == 0) ? Vec3b(x/2,255,255) : ( (channelNum == 1) ? Vec3b(255,x/2,255) : Vec3b(255,255,x/2) );
+        }
+    }
+
+    cvtColor(gradient, gradient, CV_HSV2BGR);
+  }
+  else if(histogramChannel == "YIQ")
+  {
+    /// YIQ color gradients
+    for(int y = 0; y < 50; y++)
+    {
+        for(int x = 0; x < hist_w; x++)
+        {
+          gradient.at<Vec3b>(y, x) = (channelNum == 0) ? Vec3b(x/2,0,0) : ( (channelNum == 1) ? Vec3b(0,x/2,0) : Vec3b(0,0,x/2) );
+        }
+    }
+
+    yiq2color(gradient, gradient);
+  }
+  else
+  {
+    /// RGB color gradients
+    for(int y = 0; y < 50; y++)
+    {
+        for(int x = 0; x < hist_w; x++)
+        {
+          gradient.at<Vec3b>(y, x) = (channelNum == 0) ? Vec3b(x/2,0,0) : ( (channelNum == 1) ? Vec3b(0,x/2,0) : Vec3b(0,0,x/2) );
+        }
+    }
   }
 
   /// Channel gradients
@@ -160,9 +210,7 @@ void imageHistogram(const Mat &sourceImage, Mat &destinationImage)
   {
   	  for(int x = 0; x < hist_w; x++)
   	  {
-	  	  histImage.at<Vec3b>(y, x) = Vec3b(x/2,0,0);
-	  	  histImage.at<Vec3b>(y + 70, x) = Vec3b(0,x/2,0);
-	  	  histImage.at<Vec3b>(y + 140, x) = Vec3b(0,0,x/2);
+	  	  histImage.at<Vec3b>(y, x) = gradient.at<Vec3b>(y - hist_h - 20, x);
   	  }
   }
 
