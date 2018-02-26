@@ -2,7 +2,7 @@
 #include "rutinasVision.h"
 
 /* Declaring all the image matrices */
-Mat bgrImage = Mat(240, 320, CV_8UC3);
+Mat bgrImage;
 Mat bHistogram;
 Mat gHistogram;
 Mat rHistogram;
