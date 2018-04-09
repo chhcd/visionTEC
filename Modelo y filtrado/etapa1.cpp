@@ -8,27 +8,20 @@ using namespace cv;
 int main(int argc, char *argv[])
 {
 	/* Open camera device */
-	Mat originalImage = imread("Foto.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-
-    imshow("Original Image", originalImage);
-
-    float data[25] = { 1, 2, 2, 2, 1,
-                       2, 4, 4, 4, 2,
-                       2, 4, 8, 4, 2,
-                       2, 4, 4, 4, 2,
-                       1, 2, 2, 2, 1};
-
-    float normalize_factor = 0;
-    for(int i=0; i<25; i++)
-        normalize_factor += data[i];
-
-    Mat kernel = Mat(5, 5, CV_32F, data);
-
+	Mat originalImage = imread("puto.png", CV_LOAD_IMAGE_GRAYSCALE);
+    Mat binImage;
     Mat filterImage;
 
-    filter2D(originalImage, filterImage, -1 , kernel / normalize_factor, Point(-1,-1), 0, BORDER_DEFAULT);
+    threshold( originalImage, binImage, 128, 255,0 );
+
+    imshow("Original Image", binImage);
+
+    Mat kernel = cv::getStructuringElement(MORPH_CROSS, Size(5, 5));
+
+    cv::erode(binImage, filterImage, kernel);
 
     imshow("Gaussian Image", filterImage);
-    imwrite( "gaussian_image.jpg", filterImage);
+    imwrite("bin_puto.jpg", binImage);
+    imwrite( "Erosion_puto.jpg", filterImage);
     waitKey(0);
 }
