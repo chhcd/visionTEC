@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
+#include <stdio.h>
 #include <climits>
 #include "rutinas.h"
 #define PI 3.14159265
