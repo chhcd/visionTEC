@@ -15,6 +15,8 @@
 using namespace std;
 using namespace cv;
 
+#define PI 3.14159265
+
 /* Declaring all the image matrices */
 Mat bgrImage = Mat(240, 320, CV_8UC3);
 Mat bHistogram;
@@ -508,6 +510,19 @@ void showFunctionMenu()
     imshow("Menu de funciones", menu);
 }
 
+void showObjectDetectionMenu()
+{
+    /* Show interface menu to user*/
+    Mat menu;
+    menu.create(600,600,CV_8UC3);
+    menu.setTo(Scalar(200,200,200));
+    putText(menu,"Menu", Point(250,55) , FONT_HERSHEY_SIMPLEX, 1.5, Scalar(0,0,0), 2,8,false );
+    putText(menu,"2. Regresar al menu de funciones", Point(15,90) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
+    putText(menu,"m. Iniciar rutina", Point(15,130) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
+    putText(menu,"q. Terminar", Point(15,170) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
+    imshow("Menu de deteccion de objetos", menu);
+}
+
 int main(int argc,char* argv[])
 {
     //establishing connection with the quadcopter
@@ -561,12 +576,14 @@ int main(int argc,char* argv[])
                 if(bObjectDetectionMode)
                 {
                     bObjectDetectionMode = 0;
+                    destroyWindow("Menu de deteccion de objetos");
                     showFunctionMenu();
                 }
                 else
                 {
                     bObjectDetectionMode = 1;
                     destroyWindow("Menu de funciones");
+                    showObjectDetectionMenu();
                 }
                 break;
         }
