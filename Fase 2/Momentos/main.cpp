@@ -14,8 +14,6 @@ ldd getOrdinaryMoment(vector<Point>, int , int );
 ldd getCentralizedMoment(vector<Point>, int,  ldd, int, ldd);
 rMoments computeMoments(vector<Point>);
 
-
-
 int main(){
 
 	VideoCapture cap(0);
@@ -24,7 +22,6 @@ int main(){
 
 	if(!cap.isOpened())
 		return -1;
-
 
 	while(1){
 		// Mat img = imread("comp2.jpg",CV_LOAD_IMAGE_GRAYSCALE );
@@ -45,10 +42,8 @@ int main(){
 		// cvtColor(yiqFilter, yiqFilter, CV_BGR2GRAY);
 
 		imshow("img", yiqFilter);
-
-
 		
-		gray2threshold(yiqFilter,binImage,40);
+		gray2threshold(yiqFilter,binImage,80);
 		imshow("bin",binImage);
 		
 		vector<vector<Point> > vp;
@@ -80,8 +75,6 @@ int main(){
 			printf("Theta: %Lf \n\n",vMoments[i].theta); 
 			circle(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), 5 ,Scalar(0,0,255),CV_FILLED,8,0);
 
-
-
 		}
 
 		// // wait to close the program
@@ -94,8 +87,9 @@ int main(){
 		// while(k != 27){
 		// 	k = waitKey(3);
 		// }
-		destroyAllWindows();
 	}
+
+	destroyAllWindows();
 
 	return 0;
 }
