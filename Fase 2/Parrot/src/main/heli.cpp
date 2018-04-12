@@ -62,6 +62,9 @@ bool bEnBinarization = false;
 bool bContinue = true;
 bool bCalibrationMode = false;
 bool bObjectDetectionMode = false;
+bool bBasicBin = false;
+bool bSegment = false;
+bool bManualMovement = true;
 
 /* Slider values for binarization */
 int sliderBinValue=0;
@@ -135,7 +138,7 @@ void mCoordinatesComponentVal(int event, int x, int y, int flags, void* param)
 
 void mSnapObj(int event, int x, int y, int flags, void* param)
 {
-    int iDelta = 30;
+    int iDelta = 40;
     switch (event)
     {
         case CV_EVENT_LBUTTONDOWN:
@@ -204,11 +207,14 @@ void mSnapObj(int event, int x, int y, int flags, void* param)
 void calibrationMode(uint8_t key)
 {
     if(!freezeImage){
-        //image is captured
+/*        //image is captured
         heli->renewImage(image);
 
         // Copy to OpenCV Mat
-        rawToMat(bgrImage, image);
+        rawToMat(bgrImage, image);*/
+
+        //// TODO CHANGE
+        bgrImage = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
 
         /* Obtain a new frame from camera */
         //camera.read(bgrImage);
@@ -396,9 +402,9 @@ void calibrationMode(uint8_t key)
         case 'f':
             if(bSnap){
                 destroyWindow("Snaped"); 
-                rBGR[0]=0 ; rBGR[1]=255; rBGR[2] = 0; rBGR[3] = 255; rBGR[4] = 0; rBGR[5] = 255;
-                rHSV[0]=0 ; rHSV[1]=255; rHSV[2] = 0; rHSV[3] = 255; rHSV[4] = 0; rHSV[5] = 255;
-                rYIQ[0]=0 ; rYIQ[1]=255; rYIQ[2] = 0; rYIQ[3] = 255; rYIQ[4] = 0; rYIQ[5] = 255;
+                // rBGR[0]=0 ; rBGR[1]=255; rBGR[2] = 0; rBGR[3] = 255; rBGR[4] = 0; rBGR[5] = 255;
+                // rHSV[0]=0 ; rHSV[1]=255; rHSV[2] = 0; rHSV[3] = 255; rHSV[4] = 0; rHSV[5] = 255;
+                // rYIQ[0]=0     ; rYIQ[1]=255; rYIQ[2] = 0; rYIQ[3] = 255; rYIQ[4] = 0; rYIQ[5] = 255;
             }
             bSnap = !bSnap;
             break;
@@ -407,76 +413,304 @@ void calibrationMode(uint8_t key)
 
 void objectDetectionMode(uint8_t key)
 {
-    switch (key)
+    if(bManualMovement)
     {
-        // Parrot commands
-        case 'a': yaw = -20000.0; break;
-        case 'd': yaw = 20000.0; break;
-        case 'w': height = -20000.0; break;
-        case 's': height = 20000.0; break;
-        case 't': heli->takeoff(); break;
-        case 'e': heli->land(); break;
-        case 'z': heli->switchCamera(0); break;
-        case 'x': heli->switchCamera(1); break;
-        case 'c': heli->switchCamera(2); break;
-        case 'v': heli->switchCamera(3); break;
-        case 'j': roll = -20000.0; break;
-        case 'l': roll = 20000.0; break;
-        case 'i': pitch = -20000.0; break;
-        case 'k': pitch = 20000.0; break;
-        case 'o': hover = (hover + 1) % 2; break;
-    }
+        //// TODO TODO
+        /*        //image is captured
+        heli->renewImage(image);
 
-    if (useJoystick)
-    {
-        SDL_Event event;
-        SDL_PollEvent(&event);
+        // Copy to OpenCV Mat
+        rawToMat(bgrImage, image);
 
-        joypadRoll = SDL_JoystickGetAxis(m_joystick, 2);
-        joypadPitch = SDL_JoystickGetAxis(m_joystick, 3);
-        joypadVerticalSpeed = SDL_JoystickGetAxis(m_joystick, 1);
-        joypadYaw = SDL_JoystickGetAxis(m_joystick, 0);
-        joypadTakeOff = SDL_JoystickGetButton(m_joystick, 1);
-        joypadLand = SDL_JoystickGetButton(m_joystick, 2);
-        joypadHover = SDL_JoystickGetButton(m_joystick, 0);
-    }
+        imshow("Current image", bgrImage);*/
 
-    // prints the drone telemetric data, helidata struct contains drone angles, speeds and battery status
-    // printf("===================== Parrot Basic Example =====================\n\n");
-    // fprintf(stdout, "Angles  : %.2lf %.2lf %.2lf \n", helidata.phi, helidata.psi, helidata.theta);
-    // fprintf(stdout, "Speeds  : %.2lf %.2lf %.2lf \n", helidata.vx, helidata.vy, helidata.vz);
-    // fprintf(stdout, "Battery : %.0lf \n", helidata.battery);
-    // fprintf(stdout, "Hover   : %d \n", hover);
-    // fprintf(stdout, "Joypad  : %d \n", useJoystick ? 1 : 0);
-    // fprintf(stdout, "  Roll    : %d \n", joypadRoll);
-    // fprintf(stdout, "  Pitch   : %d \n", joypadPitch);
-    // fprintf(stdout, "  Yaw     : %d \n", joypadYaw);
-    // fprintf(stdout, "  V.S.    : %d \n", joypadVerticalSpeed);
-    // fprintf(stdout, "  TakeOff : %d \n", joypadTakeOff);
-    // fprintf(stdout, "  Land    : %d \n", joypadLand);
-    // fprintf(stdout, "Navigating with Joystick: %d \n", navigatedWithJoystick ? 1 : 0);
-    // cout<<"Pos X: "<<Px<<" Pos Y: "<<Py<<" Valor RGB: ("<<vR<<","<<vG<<","<<vB<<")"<<endl;
-    
+        switch (key)
+        {
+            // Parrot commands
+            case 'a': yaw = -20000.0; break;
+            case 'd': yaw = 20000.0; break;
+            case 'w': height = -20000.0; break;
+            case 's': height = 20000.0; break;
+            case 't': heli->takeoff(); break;
+            case 'e': heli->land(); break;
+            case 'z': heli->switchCamera(0); break;
+            case 'x': heli->switchCamera(1); break;
+            case 'c': heli->switchCamera(2); break;
+            case 'v': heli->switchCamera(3); break;
+            case 'j': roll = -20000.0; break;
+            case 'l': roll = 20000.0; break;
+            case 'i': pitch = -20000.0; break;
+            case 'k': pitch = 20000.0; break;
+            case 'o': hover = (hover + 1) % 2; break;
+            case 'm': bManualMovement = false; break;
+            case 'b':
+                if(bBasicBin){ destroyWindow("Filtro"); destroyWindow("Binarizado"); }
+                    bBasicBin = !bBasicBin;
+                break;
+            case 'f':
+                if(bSegment){ destroyWindow("Segmentacion"); }
+                    bSegment = !bSegment;
+                break;
+        }
 
-    if (joypadTakeOff) {
-        heli->takeoff();
-    }
-    if (joypadLand) {
-        heli->land();
-    }
-    //hover = joypadHover ? 1 : 0;
+        if(bBasicBin)
+        {
+            Mat bgrFilter;
+            Mat binImage;
 
-    //setting the drone angles
-    if (joypadRoll != 0 || joypadPitch != 0 || joypadVerticalSpeed != 0 || joypadYaw != 0)
-    {
-        heli->setAngles(joypadPitch, joypadRoll, joypadYaw, joypadVerticalSpeed, hover);
-        navigatedWithJoystick = true;
+            colorFilter(bgrImage,bgrFilter,rBGR);
+            cvtColor(bgrFilter, bgrFilter, CV_BGR2GRAY);
+
+            imshow("Filtro", bgrFilter);
+            
+            gray2threshold(bgrFilter,binImage,80);
+            imshow("Binarizado",binImage);
+        }
+
+        if(bSegment)
+        {
+            Mat bgrFilter;
+            Mat binImage;
+            Mat colormat;
+
+            colorFilter(bgrImage,bgrFilter,rBGR);
+            cvtColor(bgrFilter, bgrFilter, CV_BGR2GRAY);
+            gray2threshold(bgrFilter,binImage,80);
+        
+            vector<vector<Point> > vp;
+            // each region is a vector of Point
+            vp = mycontours(binImage,500,colormat);
+
+            // vector to store moments
+            vector<rMoments> vMoments;
+
+            printf("Number of regions: %lu \n\n", vp.size()); 
+
+            int recognizedObjects = 0;
+
+            for (int i = 0; i< vp.size(); i++){
+                vMoments.push_back(computeMoments(vp[i]));
+
+                printf("m00: %Lf  m10:  %Lf  m01: %Lf \n", vMoments[i].m00,vMoments[i].m10,vMoments[i].m01);
+                printf("u10: %Lf  u01:  %Lf  u11: %Lf  u20: %Lf  u02: %Lf\n",vMoments[i].u10,vMoments[i].u01,vMoments[i].u11,vMoments[i].u20,vMoments[i].u02 );
+                printf("phi1: %Lf  phi2: %Lf  \n", vMoments[i].phi1, vMoments[i].phi2);
+
+                int x2 = vMoments[i].m10/vMoments[i].m00 + 100* cos(vMoments[i].theta);
+                int y2 = vMoments[i].m01/vMoments[i].m00 + 100* sin(vMoments[i].theta); 
+                int x3 = vMoments[i].m10/vMoments[i].m00 - 100* cos(vMoments[i].theta);
+                int y3 = vMoments[i].m01/vMoments[i].m00 - 100* sin(vMoments[i].theta); 
+                
+                line(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), Point(x2,y2), Scalar(0,255,0),2 );
+                line(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), Point(x3,y3), Scalar(0,255,0),2 );
+
+                printf("Theta: %Lf \n\n",vMoments[i].theta); 
+                circle(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), 5 ,Scalar(0,0,255),CV_FILLED,8,0);
+
+                // Pelota de golf (Adelante)
+                if(vMoments[i].phi1 >= 0.15 && vMoments[i].phi1 <= 0.17 && vMoments[i].phi2 >= 0 && vMoments[i].phi2 <= 0.0005)
+                {
+                    printf("Pelota de golf (Adelante)\n");
+                    recognizedObjects++;
+                }
+                // Palo de golf ancho (Atras)
+                else if(vMoments[i].phi1 >= 0.19 && vMoments[i].phi1 <= 0.21 && vMoments[i].phi2 >= 0.003 && vMoments[i].phi2 <= 0.01)
+                {
+                    printf("Palo de golf ancho (Atras)\n");
+                    recognizedObjects++;
+                }
+                // Golfista (derecha)
+                else if(vMoments[i].phi1 >= 0.36 && vMoments[i].phi1 <= 0.45 && vMoments[i].phi2 >= 0.04 && vMoments[i].phi2 <= 0.1)
+                {
+                    printf("Golfista (derecha) con theta %s\n", vMoments[i].theta);
+                    recognizedObjects++;
+                }
+                // Palo de golf delgado (izquierda)
+                else if(vMoments[i].phi1 >= 0.9 && vMoments[i].phi2 >= 0.9)
+                {
+                    printf("Palo de golf delgado (izquierda) con theta %s\n", vMoments[i].theta);
+                    recognizedObjects++;
+                }
+            }
+
+            imshow("Segmentacion",colormat);
+            printf("Recognized objects: %d\n", recognizedObjects);
+        }
+
+        if (useJoystick)
+        {
+            SDL_Event event;
+            SDL_PollEvent(&event);
+
+            joypadRoll = SDL_JoystickGetAxis(m_joystick, 2);
+            joypadPitch = SDL_JoystickGetAxis(m_joystick, 3);
+            joypadVerticalSpeed = SDL_JoystickGetAxis(m_joystick, 1);
+            joypadYaw = SDL_JoystickGetAxis(m_joystick, 0);
+            joypadTakeOff = SDL_JoystickGetButton(m_joystick, 1);
+            joypadLand = SDL_JoystickGetButton(m_joystick, 2);
+            joypadHover = SDL_JoystickGetButton(m_joystick, 0);
+        }
+
+        // prints the drone telemetric data, helidata struct contains drone angles, speeds and battery status
+        // printf("===================== Parrot Basic Example =====================\n\n");
+        // fprintf(stdout, "Angles  : %.2lf %.2lf %.2lf \n", helidata.phi, helidata.psi, helidata.theta);
+        // fprintf(stdout, "Speeds  : %.2lf %.2lf %.2lf \n", helidata.vx, helidata.vy, helidata.vz);
+        // fprintf(stdout, "Battery : %.0lf \n", helidata.battery);
+        // fprintf(stdout, "Hover   : %d \n", hover);
+        // fprintf(stdout, "Joypad  : %d \n", useJoystick ? 1 : 0);
+        // fprintf(stdout, "  Roll    : %d \n", joypadRoll);
+        // fprintf(stdout, "  Pitch   : %d \n", joypadPitch);
+        // fprintf(stdout, "  Yaw     : %d \n", joypadYaw);
+        // fprintf(stdout, "  V.S.    : %d \n", joypadVerticalSpeed);
+        // fprintf(stdout, "  TakeOff : %d \n", joypadTakeOff);
+        // fprintf(stdout, "  Land    : %d \n", joypadLand);
+        // fprintf(stdout, "Navigating with Joystick: %d \n", navigatedWithJoystick ? 1 : 0);
+        // cout<<"Pos X: "<<Px<<" Pos Y: "<<Py<<" Valor RGB: ("<<vR<<","<<vG<<","<<vB<<")"<<endl;
+        
+
+        if (joypadTakeOff) {
+            heli->takeoff();
+        }
+        if (joypadLand) {
+            heli->land();
+        }
+        //hover = joypadHover ? 1 : 0;
+
+        //setting the drone angles
+        if (joypadRoll != 0 || joypadPitch != 0 || joypadVerticalSpeed != 0 || joypadYaw != 0)
+        {
+            heli->setAngles(joypadPitch, joypadRoll, joypadYaw, joypadVerticalSpeed, hover);
+            navigatedWithJoystick = true;
+        }
+        else
+        {
+            heli->setAngles(pitch, roll, yaw, height, hover);
+            navigatedWithJoystick = false;
+        } 
     }
     else
     {
-        heli->setAngles(pitch, roll, yaw, height, hover);
-        navigatedWithJoystick = false;
-    } 
+        Mat frame;
+        Mat img;
+        Mat binImage;
+        Mat colormat;
+        Mat yiq;
+        Mat yiqFilter;
+
+        //// TODO CHANGE
+        frame = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
+
+        colorFilter(frame,yiqFilter,rBGR);
+        cvtColor(yiqFilter, yiqFilter, CV_BGR2GRAY);
+
+        // imshow("img", yiqFilter);
+        
+        gray2threshold(yiqFilter,binImage,80);
+        // imshow("bin",binImage);
+        
+        vector<vector<Point> > vp;
+        // each region is a vector of Point
+        vp = mycontours(binImage,500,colormat);
+
+        // vector to store moments
+        vector<rMoments> vMoments;
+
+
+        printf("Number of regions: %lu \n\n", vp.size()); 
+
+        int recognizedObjects = 0;
+        int horAxisFig = 0;
+        int verAxisFig = 0;
+        int movAction = 0;
+
+        for (int i = 0; i< vp.size(); i++){
+            vMoments.push_back(computeMoments(vp[i]));
+
+            // printf("m00: %Lf  m10:  %Lf  m01: %Lf \n", vMoments[i].m00,vMoments[i].m10,vMoments[i].m01);
+            // printf("u10: %Lf  u01:  %Lf  u11: %Lf  u20: %Lf  u02: %Lf\n",vMoments[i].u10,vMoments[i].u01,vMoments[i].u11,vMoments[i].u20,vMoments[i].u02 );
+            printf("phi1: %Lf  phi2: %Lf  \n", vMoments[i].phi1, vMoments[i].phi2);
+
+            int x2 = vMoments[i].m10/vMoments[i].m00 + 100* cos(vMoments[i].theta);
+            int y2 = vMoments[i].m01/vMoments[i].m00 + 100* sin(vMoments[i].theta); 
+            int x3 = vMoments[i].m10/vMoments[i].m00 - 100* cos(vMoments[i].theta);
+            int y3 = vMoments[i].m01/vMoments[i].m00 - 100* sin(vMoments[i].theta); 
+            
+            line(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), Point(x2,y2), Scalar(0,255,0),2 );
+            line(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), Point(x3,y3), Scalar(0,255,0),2 );
+
+            printf("Theta: %Lf \n\n",vMoments[i].theta); 
+            circle(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), 5 ,Scalar(0,0,255),CV_FILLED,8,0);
+
+            imshow("Color",colormat);
+
+            // Pelota de golf (Adelante)
+            if(vMoments[i].phi1 >= 0.15 && vMoments[i].phi1 <= 0.17 && vMoments[i].phi2 >= 0 && vMoments[i].phi2 <= 0.0005)
+            {
+                printf("Pelota de golf (Adelante)\n");
+                verAxisFig = 1;
+                recognizedObjects++;
+            }
+            // Palo de golf ancho (Atras)
+            else if(vMoments[i].phi1 >= 0.19 && vMoments[i].phi1 <= 0.21 && vMoments[i].phi2 >= 0.003 && vMoments[i].phi2 <= 0.01)
+            {
+                printf("Palo de golf ancho (Atras)\n");
+                verAxisFig = 2;
+                recognizedObjects++;
+            }
+            // Golfista (derecha)
+            else if(vMoments[i].phi1 >= 0.36 && vMoments[i].phi1 <= 0.45 && vMoments[i].phi2 >= 0.04 && vMoments[i].phi2 <= 0.1)
+            {
+                printf("Golfista (derecha)\n");
+                horAxisFig = 1;
+                if(vMoments[i].theta >= 0)
+                {
+                    printf("Ir hacia abajo\n");
+                    movAction = 2;
+                }
+                else
+                {
+                    printf("Ir hacia arriba\n");
+                    movAction = 1;
+                }
+
+                recognizedObjects++;
+            }
+            // Palo de golf delgado (izquierda)
+            else if(vMoments[i].phi1 >= 0.9 && vMoments[i].phi2 >= 0.9)
+            {
+                printf("Palo de golf delgado (izquierda)\n");
+                horAxisFig = 2;
+                if(vMoments[i].theta >= 0)
+                {
+                    printf("Ir hacia abajo\n");
+                    movAction = 2;
+                }
+                else
+                {
+                    printf("Ir hacia arriba\n");
+                    movAction = 1;
+                }
+
+                recognizedObjects++;
+            }
+
+            waitKey(0);
+        }
+
+        printf("Recognized objects: %d\n", recognizedObjects);
+
+        if(recognizedObjects != 2)
+        {
+            printf("Command not recognized, try again\n");
+            bManualMovement = true;
+        }
+
+        if(!bManualMovement)
+        {
+            // Movimientos del parrot
+
+            bManualMovement = true;
+        }
+    }
 }
 
 void showCalibrationMenu()
@@ -518,8 +752,10 @@ void showObjectDetectionMenu()
     menu.setTo(Scalar(200,200,200));
     putText(menu,"Menu", Point(250,55) , FONT_HERSHEY_SIMPLEX, 1.5, Scalar(0,0,0), 2,8,false );
     putText(menu,"2. Regresar al menu de funciones", Point(15,90) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
-    putText(menu,"m. Iniciar rutina", Point(15,130) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
-    putText(menu,"q. Terminar", Point(15,170) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
+    putText(menu,"b. Binarizacion", Point(15,130) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
+    putText(menu,"f. Segmentacion de imagen", Point(15,170) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
+    putText(menu,"m. Iniciar rutina", Point(15,210) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
+    putText(menu,"q. Terminar", Point(15,250) , FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0,0,0), 2,8,false );
     imshow("Menu de deteccion de objetos", menu);
 }
 
