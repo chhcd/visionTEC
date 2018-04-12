@@ -36,6 +36,7 @@ Mat yiqFilter;
 Mat grayImage;
 Mat binImage;
 Mat snapedMat;
+Mat graph;
 
 bool bSnap = false;
 bool firstClick = true;
@@ -410,6 +411,90 @@ void calibrationMode(uint8_t key)
             break;
     }
 }
+int mapC(double x, double in_min, double in_max, double out_min, double out_max){
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+void showRegionGraph(double phi1, double phi2){
+    
+    int delta = 10;
+
+   
+
+    // create axis lines
+    // Y
+    line(graph, Point(20,20), Point(20,685), CV_RGB(0,255,255),1,8,0);
+    // X
+    line(graph, Point(20,685), Point(985,685), CV_RGB(0,255,255),1,8,0);
+
+    // Phi 1
+    putText(graph,"PHI 2", Point(25,25) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+    putText(graph,"PHI 1", Point(925,675) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+
+
+    // X MAX  = 1.5 = 1000
+    // Y MAX  = 2.0 = 700
+    double x_max = 1.5;
+    double y_max = 2.0;
+    double x_min = 0.0;
+    double y_min = 0.0;
+    double mat_x_max = 984;
+    double mat_y_max = 30;
+
+    double mat_x_min = 30;
+    double mat_y_min = 675;
+
+
+    double fig1X = 0.38;
+    double fig1Y = 0.07;
+
+    int fig1X_coord = mapC(fig1X,x_min,x_max,mat_x_min,mat_x_max);
+    int fig1Y_coord = mapC(fig1Y,y_min,y_max,mat_y_min,mat_y_max);
+    putText(graph,"Golfista", Point(fig1X_coord - delta,fig1Y_coord - delta - 10) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+    rectangle(graph, Point(fig1X_coord - delta, fig1Y_coord - delta),Point(fig1X_coord + delta, fig1Y_coord + delta),Scalar(255,0,0),2);
+
+    double fig2X = 0.16;
+    double fig2Y = 0.001;
+
+    int fig2X_coord = mapC(fig2X,x_min,x_max,mat_x_min,mat_x_max);
+    int fig2Y_coord = mapC(fig2Y,y_min,y_max,mat_y_min,mat_y_max);
+    putText(graph,"Pelota", Point(fig2X_coord - delta,fig2Y_coord - delta - 10) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+    rectangle(graph, Point(fig2X_coord - delta, fig2Y_coord - delta),Point(fig2X_coord + delta, fig2Y_coord + delta),Scalar(255,0,0),2);
+
+    double fig3X = 0.2;
+    double fig3Y = 0.005;
+
+    int fig3X_coord = mapC(fig3X,x_min,x_max,mat_x_min,mat_x_max);
+    int fig3Y_coord = mapC(fig3Y,y_min,y_max,mat_y_min,mat_y_max);
+    putText(graph,"Palo ancho", Point(fig3X_coord - delta,fig3Y_coord - delta - 20) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+    rectangle(graph, Point(fig3X_coord - delta, fig3Y_coord - delta),Point(fig3X_coord + delta, fig3Y_coord + delta),Scalar(255,0,0),2);
+
+
+
+    double fig4X = 1.36;
+    double fig4Y = 1.80;
+
+    int fig4X_coord = mapC(fig4X,x_min,x_max,mat_x_min,mat_x_max);
+    int fig4Y_coord = mapC(fig4Y,y_min,y_max,mat_y_min,mat_y_max);
+    putText(graph,"Baston Basic", Point(fig4X_coord - delta*2,fig4Y_coord - delta*2 - 10) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+    rectangle(graph, Point(fig4X_coord - delta*2, fig4Y_coord - delta*2),Point(fig4X_coord + delta*2, fig4Y_coord + delta*2),Scalar(255,0,0),2);
+
+
+
+    // circle(graph, Point(fig1X_coord,fig1Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+    // circle(graph, Point(fig2X_coord,fig2Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+    // circle(graph, Point(fig3X_coord,fig3Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+    // circle(graph, Point(fig4X_coord,fig4Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+  
+    // plot new point
+
+    int newFigX = mapC(phi1,x_min,x_max,mat_x_min,mat_x_max);
+    int newFigY = mapC(phi2,y_min,y_max,mat_y_min,mat_y_max);
+
+    circle(graph, Point(newFigX,newFigY), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+
+    // imshow("Grafica de regiones", graph);
+}
+
 
 void objectDetectionMode(uint8_t key)
 {
@@ -479,7 +564,7 @@ void objectDetectionMode(uint8_t key)
         
             vector<vector<Point> > vp;
             // each region is a vector of Point
-            vp = mycontours(binImage,500,colormat);
+            vp = mycontours(binImage,300,colormat);
 
             // vector to store moments
             vector<rMoments> vMoments;
@@ -487,6 +572,9 @@ void objectDetectionMode(uint8_t key)
             printf("Number of regions: %lu \n\n", vp.size()); 
 
             int recognizedObjects = 0;
+
+            graph.create(700,1000, CV_8UC3);
+            graph.setTo(Scalar(30,30,30));
 
             for (int i = 0; i< vp.size(); i++){
                 vMoments.push_back(computeMoments(vp[i]));
@@ -506,6 +594,10 @@ void objectDetectionMode(uint8_t key)
                 printf("Theta: %Lf \n\n",vMoments[i].theta); 
                 circle(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), 5 ,Scalar(0,0,255),CV_FILLED,8,0);
 
+
+                // Draw in graph
+                showRegionGraph(vMoments[i].phi1, vMoments[i].phi2);
+
                 // Pelota de golf (Adelante)
                 if(vMoments[i].phi1 >= 0.15 && vMoments[i].phi1 <= 0.17 && vMoments[i].phi2 >= 0 && vMoments[i].phi2 <= 0.0005)
                 {
@@ -521,18 +613,20 @@ void objectDetectionMode(uint8_t key)
                 // Golfista (derecha)
                 else if(vMoments[i].phi1 >= 0.36 && vMoments[i].phi1 <= 0.45 && vMoments[i].phi2 >= 0.04 && vMoments[i].phi2 <= 0.1)
                 {
-                    printf("Golfista (derecha) con theta %s\n", vMoments[i].theta);
+                    printf("Golfista (derecha) con theta %d\n", vMoments[i].theta);
                     recognizedObjects++;
                 }
                 // Palo de golf delgado (izquierda)
                 else if(vMoments[i].phi1 >= 0.9 && vMoments[i].phi2 >= 0.9)
                 {
-                    printf("Palo de golf delgado (izquierda) con theta %s\n", vMoments[i].theta);
+                    printf("Palo de golf delgado (izquierda) con theta %d\n", vMoments[i].theta);
                     recognizedObjects++;
                 }
             }
-
+            printf("Fuera del for\n");
             imshow("Segmentacion",colormat);
+            imshow("Grafica de regiones", graph);
+            waitKey(100);
             printf("Recognized objects: %d\n", recognizedObjects);
         }
 
@@ -613,7 +707,7 @@ void objectDetectionMode(uint8_t key)
         
         vector<vector<Point> > vp;
         // each region is a vector of Point
-        vp = mycontours(binImage,500,colormat);
+        vp = mycontours(binImage,300,colormat);
 
         // vector to store moments
         vector<rMoments> vMoments;
@@ -625,6 +719,9 @@ void objectDetectionMode(uint8_t key)
         int horAxisFig = 0;
         int verAxisFig = 0;
         int movAction = 0;
+
+        graph.create(700,1000, CV_8UC3);
+        graph.setTo(Scalar(30,30,30));
 
         for (int i = 0; i< vp.size(); i++){
             vMoments.push_back(computeMoments(vp[i]));
@@ -645,6 +742,8 @@ void objectDetectionMode(uint8_t key)
             circle(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), 5 ,Scalar(0,0,255),CV_FILLED,8,0);
 
             imshow("Color",colormat);
+
+            showRegionGraph(vMoments[i].phi1, vMoments[i].phi2);
 
             // Pelota de golf (Adelante)
             if(vMoments[i].phi1 >= 0.15 && vMoments[i].phi1 <= 0.17 && vMoments[i].phi2 >= 0 && vMoments[i].phi2 <= 0.0005)
@@ -699,8 +798,9 @@ void objectDetectionMode(uint8_t key)
                 recognizedObjects++;
             }
 
-            waitKey(0);
         }
+        imshow("Grafica de regiones", graph);
+        waitKey(100);
 
         printf("Recognized objects: %d\n", recognizedObjects);
 
@@ -868,80 +968,12 @@ void showObjectDetectionMenu()
     imshow("Menu de deteccion de objetos", menu);
 }
 
-int mapC(double x, double in_min, double in_max, double out_min, double out_max){
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-void showRegionGraph(){
-    Mat graph;
 
 
-    graph.create(700,1000, CV_8UC3);
-    graph.setTo(Scalar(30,30,30));
-   
 
-    // create axis lines
-    // Y
-    line(graph, Point(20,20), Point(20,685), CV_RGB(0,255,255),1,8,0);
-    // X
-    line(graph, Point(20,685), Point(985,685), CV_RGB(0,255,255),1,8,0);
-
-    // Phi 1
-    putText(graph,"PHI 2", Point(25,25) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
-    putText(graph,"PHI 1", Point(925,675) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
-
-
-    // X MAX  = 1.5 = 1000
-    // Y MAX  = 2.0 = 700
-    double x_max = 1.5;
-    double y_max = 2.0;
-    double x_min = 0.0;
-    double y_min = 0.0;
-    double mat_x_max = 984;
-    double mat_y_max = 30;
-
-    double mat_x_min = 30;
-    double mat_y_min = 675;
-
-    double fig1X = 0.38;
-    double fig1Y = 0.07;
-
-    int fig1X_coord = mapC(fig1X,x_min,x_max,mat_x_min,mat_x_max);
-    int fig1Y_coord = mapC(fig1Y,y_min,y_max,mat_y_min,mat_y_max);
-
-    double fig2X = 0.16;
-    double fig2Y = 0.001;
-
-    int fig2X_coord = mapC(fig2X,x_min,x_max,mat_x_min,mat_x_max);
-    int fig2Y_coord = mapC(fig2Y,y_min,y_max,mat_y_min,mat_y_max);
-
-    double fig3X = 0.2;
-    double fig3Y = 0.005;
-
-    int fig3X_coord = mapC(fig3X,x_min,x_max,mat_x_min,mat_x_max);
-    int fig3Y_coord = mapC(fig3Y,y_min,y_max,mat_y_min,mat_y_max);
-    
-    double fig4X = 1.5;
-    double fig4Y = 1.80;
-
-    int fig4X_coord = mapC(fig4X,x_min,x_max,mat_x_min,mat_x_max);
-    int fig4Y_coord = mapC(fig4Y,y_min,y_max,mat_y_min,mat_y_max);
-
-    circle(graph, Point(fig1X_coord,fig1Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
-    circle(graph, Point(fig2X_coord,fig2Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
-    circle(graph, Point(fig3X_coord,fig3Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
-    circle(graph, Point(fig4X_coord,fig4Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
-
-
-    int delta = 10;
-    // DRAW regions
-    rectangle(graph, Point(fig1X_coord - delta, fig1Y_coord - delta),Point(fig1X_coord + delta, fig1Y_coord + delta),Scalar(255,0,0),2);
-    rectangle(graph, Point(fig2X_coord - delta, fig2Y_coord - delta),Point(fig2X_coord + delta, fig2Y_coord + delta),Scalar(255,0,0),2);
-    rectangle(graph, Point(fig3X_coord - delta, fig3Y_coord - delta),Point(fig3X_coord + delta, fig3Y_coord + delta),Scalar(255,0,0),2);
-    rectangle(graph, Point(fig4X_coord - delta, fig4Y_coord - delta),Point(fig4X_coord + delta, fig4Y_coord + delta),Scalar(255,0,0),2);
-
-
-    imshow("Grafica de regiones", graph);
-}
+// ------------------------------------------ //
+//                  MAIN
+// ------------------------------------------ //
 
 int main(int argc,char* argv[])
 {
@@ -967,7 +999,7 @@ int main(int argc,char* argv[])
     /* Show interface menu to user*/
     showFunctionMenu();
 
-    showRegionGraph();
+    // showRegionGraph(0.38,0.07);
 
     while (bContinue)
     {
