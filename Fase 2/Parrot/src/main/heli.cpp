@@ -757,6 +757,81 @@ void showObjectDetectionMenu()
     imshow("Menu de deteccion de objetos", menu);
 }
 
+int mapC(double x, double in_min, double in_max, double out_min, double out_max){
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+void showRegionGraph(){
+    Mat graph;
+
+
+    graph.create(700,1000, CV_8UC3);
+    graph.setTo(Scalar(30,30,30));
+   
+
+    // create axis lines
+    // Y
+    line(graph, Point(20,20), Point(20,685), CV_RGB(0,255,255),1,8,0);
+    // X
+    line(graph, Point(20,685), Point(985,685), CV_RGB(0,255,255),1,8,0);
+
+    // Phi 1
+    putText(graph,"PHI 2", Point(25,25) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+    putText(graph,"PHI 1", Point(925,675) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+
+
+    // X MAX  = 1.5 = 1000
+    // Y MAX  = 2.0 = 700
+    double x_max = 1.5;
+    double y_max = 2.0;
+    double x_min = 0.0;
+    double y_min = 0.0;
+    double mat_x_max = 984;
+    double mat_y_max = 30;
+
+    double mat_x_min = 30;
+    double mat_y_min = 675;
+
+    double fig1X = 0.38;
+    double fig1Y = 0.07;
+
+    int fig1X_coord = mapC(fig1X,x_min,x_max,mat_x_min,mat_x_max);
+    int fig1Y_coord = mapC(fig1Y,y_min,y_max,mat_y_min,mat_y_max);
+
+    double fig2X = 0.16;
+    double fig2Y = 0.001;
+
+    int fig2X_coord = mapC(fig2X,x_min,x_max,mat_x_min,mat_x_max);
+    int fig2Y_coord = mapC(fig2Y,y_min,y_max,mat_y_min,mat_y_max);
+
+    double fig3X = 0.2;
+    double fig3Y = 0.005;
+
+    int fig3X_coord = mapC(fig3X,x_min,x_max,mat_x_min,mat_x_max);
+    int fig3Y_coord = mapC(fig3Y,y_min,y_max,mat_y_min,mat_y_max);
+    
+    double fig4X = 1.5;
+    double fig4Y = 1.80;
+
+    int fig4X_coord = mapC(fig4X,x_min,x_max,mat_x_min,mat_x_max);
+    int fig4Y_coord = mapC(fig4Y,y_min,y_max,mat_y_min,mat_y_max);
+
+    circle(graph, Point(fig1X_coord,fig1Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+    circle(graph, Point(fig2X_coord,fig2Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+    circle(graph, Point(fig3X_coord,fig3Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+    circle(graph, Point(fig4X_coord,fig4Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+
+
+    int delta = 10;
+    // DRAW regions
+    rectangle(graph, Point(fig1X_coord - delta, fig1Y_coord - delta),Point(fig1X_coord + delta, fig1Y_coord + delta),Scalar(255,0,0),2);
+    rectangle(graph, Point(fig2X_coord - delta, fig2Y_coord - delta),Point(fig2X_coord + delta, fig2Y_coord + delta),Scalar(255,0,0),2);
+    rectangle(graph, Point(fig3X_coord - delta, fig3Y_coord - delta),Point(fig3X_coord + delta, fig3Y_coord + delta),Scalar(255,0,0),2);
+    rectangle(graph, Point(fig4X_coord - delta, fig4Y_coord - delta),Point(fig4X_coord + delta, fig4Y_coord + delta),Scalar(255,0,0),2);
+
+
+    imshow("Grafica de regiones", graph);
+}
+
 int main(int argc,char* argv[])
 {
     //establishing connection with the quadcopter
@@ -780,6 +855,8 @@ int main(int argc,char* argv[])
 
     /* Show interface menu to user*/
     showFunctionMenu();
+
+    showRegionGraph();
 
     while (bContinue)
     {
