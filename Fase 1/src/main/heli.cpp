@@ -298,12 +298,64 @@ usleep(2500000);
 
 //hover
 //heli->setAngles(pitch, roll, yaw, height, hover);
-heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
 cout << "hover" << endl;
+heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+usleep(4000000);
+
+/*
+//Pitch Adelante
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout<<"pitch"<<endl;
+heli->setAngles(-3000, 0.0, 0.0, 0.0, 0.0);
+usleep(2500000);
+
+
+//hover
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout << "hover" << endl;
+heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+usleep(4000000);
+
+//Pitch Atras regresa
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout<<"pitch"<<endl;
+heli->setAngles(3000, 0.0, 0.0, 0.0, 0.0);
+usleep(2500000);
+
+
+//hover
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout << "hover" << endl;
+heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
 usleep(4000000);
 
 
+//Pitch Atras
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout<<"pitch"<<endl;
+heli->setAngles(3000, 0.0, 0.0, 0.0, 0.0);
+usleep(2500000);
 
+//hover
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout << "hover" << endl;
+heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+usleep(4000000);
+
+
+//Pitch Adelante-Regresa
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout<<"pitch"<<endl;
+heli->setAngles(-3000, 0.0, 0.0, 0.0, 0.0);
+usleep(2500000);
+
+//hover
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout << "hover" << endl;
+heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+usleep(4000000);
+
+*/
 cout << "land" << endl;
 heli->land();
 usleep(10000000);
