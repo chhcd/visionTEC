@@ -393,35 +393,26 @@ rMoments computeMoments(vector<Point> vp){
 
   ldd x_m = tempMt.m10/tempMt.m00;
   ldd y_m = tempMt.m01/tempMt.m00;
-  printf("ORDii\n");
-
+  
   // CENTRALIZED
   tempMt.u10 = getCentralizedMoment(vp,1,x_m,0,y_m);
   tempMt.u01 = getCentralizedMoment(vp,0,x_m,1,y_m);  
   tempMt.u11 = tempMt.m11 - (y_m)*tempMt.m10; //  tempMt.u11 = getCentralizedMoment(vp,1,x_m,1,y_m);  
   tempMt.u20 = tempMt.m20 - (x_m)*tempMt.m10; //  tempMt.u20 = getCentralizedMoment(vp,2,x_m,0,y_m);  
   tempMt.u02 = tempMt.m02 - (y_m)*tempMt.m01; //  tempMt.u02 = getCentralizedMoment(vp,0,x_m,2,y_m);  
-  printf("cent\n");
-
 
   // NORMALIZED
   tempMt.n20 =  getNormalizedMoment(tempMt.u20, tempMt.m00, 2,0);
   tempMt.n02 =  getNormalizedMoment(tempMt.u02, tempMt.m00, 0,2);
   tempMt.n11 =  getNormalizedMoment(tempMt.u11, tempMt.m00, 1,1);
-  printf("norm\n");
-
 
   // HU INVARIANT
   tempMt.phi1 = tempMt.n20 + tempMt.n02;
   tempMt.phi2 = pow(tempMt.n20 - tempMt.n02,2) + 4*pow(tempMt.n11,2);
-  printf("hu\n");
-
 
 
   // angle in radians
   tempMt.theta = 0.5*atan2(2*tempMt.u11, tempMt.u20-tempMt.u02);//*180/PI;
-  printf("theta\n");
-
   return tempMt;
 
 }

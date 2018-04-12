@@ -476,7 +476,7 @@ void showRegionGraph(double phi1, double phi2){
     int fig4X_coord = mapC(fig4X,x_min,x_max,mat_x_min,mat_x_max);
     int fig4Y_coord = mapC(fig4Y,y_min,y_max,mat_y_min,mat_y_max);
     putText(graph,"Baston Basic", Point(fig4X_coord - delta*2,fig4Y_coord - delta*2 - 10) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
-    rectangle(graph, Point(fig4X_coord - delta*2, fig4Y_coord - delta*2),Point(fig4X_coord + delta*2, fig4Y_coord + delta*2),Scalar(255,0,0),2);
+    rectangle(graph, Point(fig4X_coord - delta*6, fig4Y_coord - delta*6),Point(fig4X_coord + delta*6, fig4Y_coord + delta*6),Scalar(255,0,0),2);
 
 
 
