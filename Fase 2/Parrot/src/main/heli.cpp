@@ -507,19 +507,19 @@ void objectDetectionMode(uint8_t key)
                 circle(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), 5 ,Scalar(0,0,255),CV_FILLED,8,0);
 
                 // Pelota de golf (Adelante)
-                if(vMoments[i].phi1 >= 0.15 && vMoments[i].phi1 <= 0.17 && vMoments[i].phi2 >= 0 && vMoments[i].phi2 <= 0.0005)
+                if(vMoments[i].phi1 >= 0.135 && vMoments[i].phi1 <= 0.175 && vMoments[i].phi2 >= 0 && vMoments[i].phi2 <= 0.00075)
                 {
                     printf("Pelota de golf (Adelante)\n");
                     recognizedObjects++;
                 }
                 // Palo de golf ancho (Atras)
-                else if(vMoments[i].phi1 >= 0.19 && vMoments[i].phi1 <= 0.21 && vMoments[i].phi2 >= 0.003 && vMoments[i].phi2 <= 0.01)
+                else if(vMoments[i].phi1 >= 0.185 && vMoments[i].phi1 <= 0.225 && vMoments[i].phi2 >= 0.0025 && vMoments[i].phi2 <= 0.015)
                 {
                     printf("Palo de golf ancho (Atras)\n");
                     recognizedObjects++;
                 }
                 // Golfista (derecha)
-                else if(vMoments[i].phi1 >= 0.36 && vMoments[i].phi1 <= 0.45 && vMoments[i].phi2 >= 0.04 && vMoments[i].phi2 <= 0.1)
+                else if(vMoments[i].phi1 >= 0.35 && vMoments[i].phi1 <= 0.5 && vMoments[i].phi2 >= 0.035 && vMoments[i].phi2 <= 0.11)
                 {
                     printf("Golfista (derecha) con theta %s\n", vMoments[i].theta);
                     recognizedObjects++;
