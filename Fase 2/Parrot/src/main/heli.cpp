@@ -79,7 +79,7 @@ int hover=0;
 SDL_Joystick* m_joystick;
 bool useJoystick;
 int joypadRoll, joypadPitch, joypadVerticalSpeed, joypadYaw;
-bool navigatedWithJoystick, joypadTakeOff, joypadLand, joypadHover;
+bool navigatedWithJoystick, joypadTakeOff, joypadLand, joypadHover, joypadAutonomous;
 string ultimo = "init";
 
 
@@ -207,14 +207,14 @@ void mSnapObj(int event, int x, int y, int flags, void* param)
 void calibrationMode(uint8_t key)
 {
     if(!freezeImage){
-/*        //image is captured
+        //image is captured
         heli->renewImage(image);
 
         // Copy to OpenCV Mat
-        rawToMat(bgrImage, image);*/
+        rawToMat(bgrImage, image);
 
         //// TODO CHANGE
-        bgrImage = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
+        // bgrImage = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
 
         /* Obtain a new frame from camera */
         //camera.read(bgrImage);
@@ -416,31 +416,31 @@ void objectDetectionMode(uint8_t key)
     if(bManualMovement)
     {
         //// TODO TODO
-        /*        //image is captured
+        //image is captured
         heli->renewImage(image);
 
         // Copy to OpenCV Mat
         rawToMat(bgrImage, image);
 
-        imshow("Current image", bgrImage);*/
+        imshow("Current image", bgrImage);
 
         switch (key)
         {
             // Parrot commands
-            case 'a': yaw = -20000.0; break;
-            case 'd': yaw = 20000.0; break;
-            case 'w': height = -20000.0; break;
-            case 's': height = 20000.0; break;
+            case 'a': yaw = -2000.0; break;
+            case 'd': yaw = 2000.0; break;
+            case 'w': height = -2000.0; break;
+            case 's': height = 2000.0; break;
             case 't': heli->takeoff(); break;
             case 'e': heli->land(); break;
             case 'z': heli->switchCamera(0); break;
             case 'x': heli->switchCamera(1); break;
             case 'c': heli->switchCamera(2); break;
             case 'v': heli->switchCamera(3); break;
-            case 'j': roll = -20000.0; break;
-            case 'l': roll = 20000.0; break;
-            case 'i': pitch = -20000.0; break;
-            case 'k': pitch = 20000.0; break;
+            case 'j': roll = -2000.0; break;
+            case 'l': roll = 2000.0; break;
+            case 'i': pitch = -2000.0; break;
+            case 'k': pitch = 2000.0; break;
             case 'o': hover = (hover + 1) % 2; break;
             case 'm': bManualMovement = false; break;
             case 'b':
@@ -548,23 +548,24 @@ void objectDetectionMode(uint8_t key)
             joypadTakeOff = SDL_JoystickGetButton(m_joystick, 1);
             joypadLand = SDL_JoystickGetButton(m_joystick, 2);
             joypadHover = SDL_JoystickGetButton(m_joystick, 0);
+            joypadAutonomous = SDL_JoystickGetButton(m_joystick,3);
         }
 
         // prints the drone telemetric data, helidata struct contains drone angles, speeds and battery status
-        // printf("===================== Parrot Basic Example =====================\n\n");
-        // fprintf(stdout, "Angles  : %.2lf %.2lf %.2lf \n", helidata.phi, helidata.psi, helidata.theta);
-        // fprintf(stdout, "Speeds  : %.2lf %.2lf %.2lf \n", helidata.vx, helidata.vy, helidata.vz);
-        // fprintf(stdout, "Battery : %.0lf \n", helidata.battery);
-        // fprintf(stdout, "Hover   : %d \n", hover);
-        // fprintf(stdout, "Joypad  : %d \n", useJoystick ? 1 : 0);
-        // fprintf(stdout, "  Roll    : %d \n", joypadRoll);
-        // fprintf(stdout, "  Pitch   : %d \n", joypadPitch);
-        // fprintf(stdout, "  Yaw     : %d \n", joypadYaw);
-        // fprintf(stdout, "  V.S.    : %d \n", joypadVerticalSpeed);
-        // fprintf(stdout, "  TakeOff : %d \n", joypadTakeOff);
-        // fprintf(stdout, "  Land    : %d \n", joypadLand);
-        // fprintf(stdout, "Navigating with Joystick: %d \n", navigatedWithJoystick ? 1 : 0);
-        // cout<<"Pos X: "<<Px<<" Pos Y: "<<Py<<" Valor RGB: ("<<vR<<","<<vG<<","<<vB<<")"<<endl;
+        printf("===================== Parrot Basic Example =====================\n\n");
+        fprintf(stdout, "Angles  : %.2lf %.2lf %.2lf \n", helidata.phi, helidata.psi, helidata.theta);
+        fprintf(stdout, "Speeds  : %.2lf %.2lf %.2lf \n", helidata.vx, helidata.vy, helidata.vz);
+        fprintf(stdout, "Battery : %.0lf \n", helidata.battery);
+        fprintf(stdout, "Hover   : %d \n", hover);
+        fprintf(stdout, "Joypad  : %d \n", useJoystick ? 1 : 0);
+        fprintf(stdout, "  Roll    : %d \n", joypadRoll);
+        fprintf(stdout, "  Pitch   : %d \n", joypadPitch);
+        fprintf(stdout, "  Yaw     : %d \n", joypadYaw);
+        fprintf(stdout, "  V.S.    : %d \n", joypadVerticalSpeed);
+        fprintf(stdout, "  TakeOff : %d \n", joypadTakeOff);
+        fprintf(stdout, "  Land    : %d \n", joypadLand);
+        fprintf(stdout, "Navigating with Joystick: %d \n", navigatedWithJoystick ? 1 : 0);
+        cout<<"Pos X: "<<Px<<" Pos Y: "<<Py<<" Valor RGB: ("<<vR<<","<<vG<<","<<vB<<")"<<endl;
         
 
         if (joypadTakeOff) {
@@ -573,12 +574,15 @@ void objectDetectionMode(uint8_t key)
         if (joypadLand) {
             heli->land();
         }
-        //hover = joypadHover ? 1 : 0;
+
+        bManualMovement = joypadAutonomous ? false : bManualMovement;
+        
+        hover = joypadHover ? !hover : hover;
 
         //setting the drone angles
         if (joypadRoll != 0 || joypadPitch != 0 || joypadVerticalSpeed != 0 || joypadYaw != 0)
         {
-            heli->setAngles(joypadPitch, joypadRoll, joypadYaw, joypadVerticalSpeed, hover);
+            heli->setAngles(joypadPitch/10, joypadRoll/5, joypadYaw/3, joypadVerticalSpeed/2, hover);
             navigatedWithJoystick = true;
         }
         else
@@ -597,9 +601,9 @@ void objectDetectionMode(uint8_t key)
         Mat yiqFilter;
 
         //// TODO CHANGE
-        frame = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
+        // frame = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
 
-        colorFilter(frame,yiqFilter,rBGR);
+        colorFilter(bgrImage,yiqFilter,rBGR);
         cvtColor(yiqFilter, yiqFilter, CV_BGR2GRAY);
 
         // imshow("img", yiqFilter);
@@ -656,6 +660,7 @@ void objectDetectionMode(uint8_t key)
                 verAxisFig = 2;
                 recognizedObjects++;
             }
+
             // Golfista (derecha)
             else if(vMoments[i].phi1 >= 0.35 && vMoments[i].phi1 <= 0.5 && vMoments[i].phi2 >= 0.035 && vMoments[i].phi2 <= 0.11)
             {
@@ -674,6 +679,7 @@ void objectDetectionMode(uint8_t key)
 
                 recognizedObjects++;
             }
+
             // Palo de golf delgado (izquierda)
             else if(vMoments[i].phi1 >= 0.9 && vMoments[i].phi2 >= 0.9)
             {
@@ -701,12 +707,115 @@ void objectDetectionMode(uint8_t key)
             printf("Command not recognized, try again\n");
             bManualMovement = true;
         }
+        else
+        {
+            printf("Modo automatico activado\n");
+        }
 
         if(!bManualMovement)
         {
             // Movimientos del parrot
 
+            //hover
+            //heli->setAngles(pitch, roll, yaw, height, hover);
+            cout<<"hover"<< endl;
+            heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+            usleep(4000000);
+
+            //Pitch Atras
+            //heli->setAngles(pitch, roll, yaw, height, hover);
+            cout<<"pitch"<<endl;
+            heli->setAngles(3000, 0.0, 0.0, 0.0, 0.0);
+            usleep(2500000);
+
+            //hover
+            //heli->setAngles(pitch, roll, yaw, height, hover);
+            cout<<"hover"<< endl;
+            heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+            usleep(4000000);
+
+
+            if (horAxisFig==1)
+            {
+                //Derecha
+                //listo
+                //heli->setAngles(pitch, roll, yaw, height, hover);
+                cout <<" Roll right" << endl;
+                heli->setAngles(0.0, 3000.0, 0.0, 0.0, 0.0);
+                usleep(2500000);
+
+            }
+
+            else if (horAxisFig==2)
+            {      
+                //Izquierda
+                //heli->setAngles(pitch, roll, yaw, height, hover);
+                cout << "Return" << endl;
+                heli->setAngles(0.0, -3000.0, 0.0, 0.0, 0.0);
+                usleep(2500000);
+            }
+
+
+            //hover
+            //heli->setAngles(pitch, roll, yaw, height, hover);
+            cout<<"hover"<< endl;
+            heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+            usleep(4000000);
+
+            if (movAction==1)
+            {
+                //Elevar
+                //heli->setAngles(pitch, roll, yaw, height, hover);
+                cout << "Lift" << endl;
+                heli->setAngles(0.0, 0.0, 0.0, -17000.0, 0.0);
+                usleep(3000000);
+            }
+
+            else if (movAction==2)
+            {
+                //Bajar
+                //heli->setAngles(pitch, roll, yaw, height, hover);
+                cout << "Down" << endl;
+                heli->setAngles(0.0, 0.0, 0.0, 9000.0, 0.0);
+                usleep(3000000);
+            }
+
+            //hover
+            //heli->setAngles(pitch, roll, yaw, height, hover);
+            cout<<"hover"<< endl;
+            heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+            usleep(4000000);
+
+            if (verAxisFig==1)
+            {
+                //Pitch Adelante
+                //heli->setAngles(pitch, roll, yaw, height, hover);
+                cout<<"pitch"<<endl;
+                heli->setAngles(-3000, 0.0, 0.0, 0.0, 0.0);
+                usleep(2500000);
+            }
+            else if (verAxisFig==2)
+            {
+                //Pitch Atras
+                //heli->setAngles(pitch, roll, yaw, height, hover);
+                cout<<"pitch"<<endl;
+                heli->setAngles(3000, 0.0, 0.0, 0.0, 0.0);
+                usleep(2500000);
+            }
+
+            
+            //hover
+            //heli->setAngles(pitch, roll, yaw, height, hover);
+            cout<<"hover"<< endl;
+            heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+            usleep(4000000);
+
+            cout << "land" << endl;
+            heli->land();
+            usleep(10000000);
+
             bManualMovement = true;
+
         }
     }
 }
