@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <iostream>
+#include <string>
 
 
 /* Developed routines*/
@@ -69,7 +70,6 @@ int const SLIDER_MAX = 255;
 
 
 
-
 CRawImage *image;
 CHeli *heli;
 float pitch, roll, yaw, height;
@@ -78,7 +78,7 @@ int hover=0;
 SDL_Joystick* m_joystick;
 bool useJoystick;
 int joypadRoll, joypadPitch, joypadVerticalSpeed, joypadYaw;
-bool navigatedWithJoystick, joypadTakeOff, joypadLand, joypadHover;
+bool navigatedWithJoystick, joypadTakeOff, joypadLand, joypadHover, joypadFoto;
 string ultimo = "init";
 
 
@@ -134,6 +134,7 @@ void mCoordinatesComponentVal(int event, int x, int y, int flags, void* param)
     }
     
 }
+
 
 void mSnapObj(int event, int x, int y, int flags, void* param)
 {
@@ -203,6 +204,130 @@ void mSnapObj(int event, int x, int y, int flags, void* param)
 
 }
 
+
+void funcion_prueba() {
+
+cout<<"funcion prueba"<<endl;
+
+
+//Despegue
+cout<<"takeoff"<< endl;
+heli->takeoff();
+usleep(5000000);
+
+//hover
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout<<"hover"<< endl;
+heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+usleep(4000000);
+
+//Elevar
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout << "Lift" << endl;
+heli->setAngles(0.0, 0.0, 0.0, -17000.0, 0.0);
+usleep(3000000);
+
+//hover
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout << "hover" << endl;
+heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+usleep(4000000);
+
+//Bajar
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout << "Down" << endl;
+heli->setAngles(0.0, 0.0, 0.0, 9000.0, 0.0);
+usleep(3000000);
+
+//hover
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout << "hover" << endl;
+heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+usleep(4000000);
+
+
+//Derecha
+//listo
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout <<" Roll right" << endl;
+heli->setAngles(0.0, 3000.0, 0.0, 0.0, 0.0);
+usleep(2500000);
+
+
+//hover
+//listo
+//heli->setAngles(pitch, roll, yaw, height, hover);
+heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+cout << "hover" << endl;
+usleep(4000000);
+
+
+//Izquierda-Regresar al centro
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout << "Return" << endl;
+heli->setAngles(0.0, -3000.0, 0.0, 0.0, 0.0);
+usleep(2500000);
+
+
+//hover
+//heli->setAngles(pitch, roll, yaw, height, hover);
+heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+cout << "hover" << endl;
+usleep(4000000);
+
+
+//Izquierda
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout << "Return" << endl;
+heli->setAngles(0.0, -3000.0, 0.0, 0.0, 0.0);
+usleep(2500000);
+
+//hover
+//heli->setAngles(pitch, roll, yaw, height, hover);
+heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+cout << "hover" << endl;
+usleep(4000000);
+
+
+//Derecha-regresar
+//heli->setAngles(pitch, roll, yaw, height, hover);
+cout <<" Roll right" << endl;
+heli->setAngles(0.0, 3000.0, 0.0, 0.0, 0.0);
+usleep(2500000);
+
+
+//hover
+//heli->setAngles(pitch, roll, yaw, height, hover);
+heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+cout << "hover" << endl;
+usleep(4000000);
+
+
+
+cout << "land" << endl;
+heli->land();
+usleep(10000000);
+
+
+
+/*
+//Yaw
+//heli->setAngles(pitch, roll, yaw, height, hover);
+heli->setAngles(0.0, 0.0, 20000.0, 0.0, 0.0);
+usleep(1000000);
+cout<<"yaw"<<endl;
+
+
+//Pitch
+//heli->setAngles(pitch, roll, yaw, height, hover);
+heli->setAngles(-10000, 0.0, 0.0, 0.0, 0.0);
+usleep(500000);
+cout<<"pitch"<<endl;
+*/
+
+}
+
+
 int main(int argc,char* argv[])
 {
     //establishing connection with the quadcopter
@@ -249,6 +374,7 @@ int main(int argc,char* argv[])
     bool freezeImage = false;
     bool bContinue = true;
     bool bEnBinarization = false;
+    unsigned int fotoNum = 0;
     while (bContinue)
     {
 
@@ -483,6 +609,11 @@ int main(int argc,char* argv[])
             case 'i': pitch = -20000.0; break;
             case 'k': pitch = 20000.0; break;
             case 'o': hover = (hover + 1) % 2; break;
+            case 'm': funcion_prueba(); break;
+            //case 1: parrotEleva(); break;
+         	//case 2: parrotDesciende(); break;
+            //case 3: parrotIzquierda(); break;
+            //case 4: parrotDerecha(); break;
         }
 
 
@@ -499,32 +630,44 @@ int main(int argc,char* argv[])
             joypadTakeOff = SDL_JoystickGetButton(m_joystick, 1);
             joypadLand = SDL_JoystickGetButton(m_joystick, 2);
             joypadHover = SDL_JoystickGetButton(m_joystick, 0);
+            joypadFoto = SDL_JoystickGetButton(m_joystick,3);
         }
 
-        // prints the drone telemetric data, helidata struct contains drone angles, speeds and battery status
-        // printf("===================== Parrot Basic Example =====================\n\n");
-        // fprintf(stdout, "Angles  : %.2lf %.2lf %.2lf \n", helidata.phi, helidata.psi, helidata.theta);
-        // fprintf(stdout, "Speeds  : %.2lf %.2lf %.2lf \n", helidata.vx, helidata.vy, helidata.vz);
-        // fprintf(stdout, "Battery : %.0lf \n", helidata.battery);
-        // fprintf(stdout, "Hover   : %d \n", hover);
-        // fprintf(stdout, "Joypad  : %d \n", useJoystick ? 1 : 0);
-        // fprintf(stdout, "  Roll    : %d \n", joypadRoll);
-        // fprintf(stdout, "  Pitch   : %d \n", joypadPitch);
-        // fprintf(stdout, "  Yaw     : %d \n", joypadYaw);
-        // fprintf(stdout, "  V.S.    : %d \n", joypadVerticalSpeed);
-        // fprintf(stdout, "  TakeOff : %d \n", joypadTakeOff);
-        // fprintf(stdout, "  Land    : %d \n", joypadLand);
-        // fprintf(stdout, "Navigating with Joystick: %d \n", navigatedWithJoystick ? 1 : 0);
-        // cout<<"Pos X: "<<Px<<" Pos Y: "<<Py<<" Valor RGB: ("<<vR<<","<<vG<<","<<vB<<")"<<endl;
+        /*
+        Takeof = equis
+        Land = circulo 
+        Hover = cuadrado
         
+        */
 
+        // prints the drone telemetric data, helidata struct contains drone angles, speeds and battery status
+        printf("===================== Parrot Basic Example =====================\n\n");
+        fprintf(stdout, "Angles  : %.2lf %.2lf %.2lf \n", helidata.phi, helidata.psi, helidata.theta);
+        fprintf(stdout, "Speeds  : %.2lf %.2lf %.2lf \n", helidata.vx, helidata.vy, helidata.vz);
+        fprintf(stdout, "Battery : %.0lf \n", helidata.battery);
+        fprintf(stdout, "Hover   : %d \n", hover);
+        fprintf(stdout, "Joypad  : %d \n", useJoystick ? 1 : 0);
+        fprintf(stdout, "  Roll    : %d \n", joypadRoll);
+        fprintf(stdout, "  Pitch   : %d \n", joypadPitch);
+        fprintf(stdout, "  Yaw     : %d \n", joypadYaw);
+        fprintf(stdout, "  V.S.    : %d \n", joypadVerticalSpeed);
+        fprintf(stdout, "  TakeOff : %d \n", joypadTakeOff);
+        fprintf(stdout, "  Land    : %d \n", joypadLand);
+        fprintf(stdout, "Navigating with Joystick: %d \n", navigatedWithJoystick ? 1 : 0);
+        cout<<"Pos X: "<<Px<<" Pos Y: "<<Py<<" Valor RGB: ("<<vR<<","<<vG<<","<<vB<<")"<<endl;
+        
+        if (joypadFoto)
+        {  
+            imwrite("muestra.jpg", bgrImage);
+        }
         if (joypadTakeOff) {
             heli->takeoff();
         }
         if (joypadLand) {
             heli->land();
         }
-        //hover = joypadHover ? 1 : 0;
+        
+        hover = joypadHover ? 1 : 0;
 
         //setting the drone angles
         if (joypadRoll != 0 || joypadPitch != 0 || joypadVerticalSpeed != 0 || joypadYaw != 0)
