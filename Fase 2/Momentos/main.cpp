@@ -24,31 +24,26 @@ int main(){
 		return -1;
 
 	while(1){
-		// Mat img = imread("muestra0.jpg",CV_LOAD_IMAGE_GRAYSCALE );
-		Mat img = imread("muestra15.jpg");
+		// Mat img = imread("comp2.jpg",CV_LOAD_IMAGE_GRAYSCALE );
 		Mat frame;
+		Mat img;
 		Mat binImage;
 		Mat colormat;
 		Mat yiq;
 		Mat yiqFilter;
-		int rYIQ[6] = {63,123,140,200,150,210};
+		// int rYIQ[6] = {63,123,140,200,150,210};
 		int rBGR[6] = {40,100,140,200,150,210};
 		
-		// cap >> frame;
+		cap >> frame;
 		// cvtColor(frame, img, CV_BGR2GRAY);
 
 		// color2yiq(frame,yiq);
-		colorFilter(img,yiqFilter,rBGR);
-		cvtColor(yiqFilter, yiqFilter, CV_BGR2GRAY);
+		colorFilter(frame,yiqFilter,rBGR);
+		// cvtColor(yiqFilter, yiqFilter, CV_BGR2GRAY);
 
-
-		// imshow("img", yiqFilter);
+		imshow("img", yiqFilter);
 		
-		imshow("img", img);
-		// color2yiq(img,yiq);
-
-		
-		gray2threshold(yiqFilter,binImage,30);
+		gray2threshold(yiqFilter,binImage,80);
 		imshow("bin",binImage);
 		
 		vector<vector<Point> > vp;
