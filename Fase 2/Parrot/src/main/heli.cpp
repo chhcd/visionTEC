@@ -209,13 +209,13 @@ void calibrationMode(uint8_t key)
 {
     if(!freezeImage){
         //image is captured
-        heli->renewImage(image);
+        // heli->renewImage(image);
 
         // Copy to OpenCV Mat
-        rawToMat(bgrImage, image);
+        // rawToMat(bgrImage, image);
 
         //// TODO CHANGE
-        // bgrImage = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
+        bgrImage = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
 
         /* Obtain a new frame from camera */
         //camera.read(bgrImage);
@@ -502,10 +502,10 @@ void objectDetectionMode(uint8_t key)
     {
         //// TODO TODO
         //image is captured
-        heli->renewImage(image);
+        // heli->renewImage(image);
 
         // Copy to OpenCV Mat
-        rawToMat(bgrImage, image);
+        // rawToMat(bgrImage, image);
 
         imshow("Current image", bgrImage);
 
@@ -613,13 +613,13 @@ void objectDetectionMode(uint8_t key)
                 // Golfista (derecha)
                 else if(vMoments[i].phi1 >= 0.36 && vMoments[i].phi1 <= 0.45 && vMoments[i].phi2 >= 0.04 && vMoments[i].phi2 <= 0.1)
                 {
-                    printf("Golfista (derecha) con theta %d\n", vMoments[i].theta);
+                    printf("Golfista (derecha) con theta %Lf\n", vMoments[i].theta);
                     recognizedObjects++;
                 }
                 // Palo de golf delgado (izquierda)
                 else if(vMoments[i].phi1 >= 0.9 && vMoments[i].phi2 >= 0.9)
                 {
-                    printf("Palo de golf delgado (izquierda) con theta %d\n", vMoments[i].theta);
+                    printf("Palo de golf delgado (izquierda) con theta %Lf\n", vMoments[i].theta);
                     recognizedObjects++;
                 }
             }
@@ -693,9 +693,6 @@ void objectDetectionMode(uint8_t key)
         Mat colormat;
         Mat yiq;
         Mat yiqFilter;
-
-        //// TODO CHANGE
-        // frame = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
 
         colorFilter(bgrImage,yiqFilter,rBGR);
         cvtColor(yiqFilter, yiqFilter, CV_BGR2GRAY);

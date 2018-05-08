@@ -6,7 +6,7 @@ SUBDIRS+=main
 
 OBJS=$(wildcard ../obj/*.o)
 LXXLIBS+=-L/usr/local/lib
-LXXLIBS+=-lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_imgproc -lSDL -lpthread
+LXXLIBS+=-lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_imgproc -lSDL -lpthread -lopencv_imgcodecs
 
 COPY_ETC_CMD=../etc/copy.sh
 COPY_ETC_SRC=../etc
