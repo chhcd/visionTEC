@@ -252,8 +252,8 @@ void generateSeeds(vector<Point> &vStrike, unsigned int N_SEEDS){
   srand(time(NULL));
   
   for(int i = 0; i < N_SEEDS; i++ ){
-    int temp_x = rand()%(X_MAX + 1) + 1;
-    int temp_y = rand()%(Y_MAX + 1) + 1; 
+    int temp_x = rand()%X_MAX;
+    int temp_y = rand()%Y_MAX; 
     vStrike.push_back(Point(temp_x, temp_y));
   }
 }
@@ -269,7 +269,6 @@ vector<vector<Point> > mycontours(const Mat binImage, unsigned int n_seeds, Mat 
 
   // building the object vector
   vector<Point> tempObject;
-
 
   // Color image as helper
   Mat colorImage(binImage.size().height,binImage.size().width,CV_8UC3, Scalar(0,0,0));
@@ -288,9 +287,9 @@ vector<vector<Point> > mycontours(const Mat binImage, unsigned int n_seeds, Mat 
     tempObject.clear();
     qPoints.push(vStrike[i]);
 
-    int colorR = rand()%(255 + 1) + 1;
-    int colorG = rand()%(255 + 1) + 1;
-    int colorB = rand()%(255 + 1) + 1;
+    int colorR = rand()%255 + 1;
+    int colorG = rand()%255 + 1;
+    int colorB = rand()%255 + 1;
 
     while(!qPoints.empty()){
       int x = qPoints.front().x;
@@ -314,7 +313,7 @@ vector<vector<Point> > mycontours(const Mat binImage, unsigned int n_seeds, Mat 
         if(isPosible(y-1,x))
           if(binImage.at<uint8_t>(y-1,x) && colorImage.at<Vec3b>(y-1,x)[0] == 0 )
             qPoints.push(Point(x,y-1));
-              
+            
         if(isPosible(y,x+1))
           if(binImage.at<uint8_t>(y,x+1)   && colorImage.at<Vec3b>(y,x+1)[0] == 0)
           qPoints.push(Point(x+1,y));
@@ -325,7 +324,6 @@ vector<vector<Point> > mycontours(const Mat binImage, unsigned int n_seeds, Mat 
         
       }
 
-      
       qPoints.pop();  
     }
 
@@ -414,7 +412,199 @@ rMoments computeMoments(vector<Point> vp){
   // angle in radians
   tempMt.theta = 0.5*atan2(2*tempMt.u11, tempMt.u20-tempMt.u02);//*180/PI;
   return tempMt;
+}
 
+int mapC(double x, double in_min, double in_max, double out_min, double out_max){
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+void showRegionGraph(double phi1, double phi2, Mat graph){
+    
+    int delta = 10;
+
+    // create axis lines
+    // Y
+    line(graph, Point(20,20), Point(20,685), CV_RGB(0,255,255),1,8,0);
+    // X
+    line(graph, Point(20,685), Point(985,685), CV_RGB(0,255,255),1,8,0);
+
+    // Phi 1
+    putText(graph,"PHI 2", Point(25,25) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+    putText(graph,"PHI 1", Point(925,675) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+
+
+    // X MAX  = 1.5 = 1000
+    // Y MAX  = 2.0 = 700
+    double x_max = 1.5;
+    double y_max = 2.0;
+    double x_min = 0.0;
+    double y_min = 0.0;
+    double mat_x_max = 984;
+    double mat_y_max = 30;
+
+    double mat_x_min = 30;
+    double mat_y_min = 675;
+
+
+    double fig1X = 0.38;
+    double fig1Y = 0.07;
+
+    int fig1X_coord = mapC(fig1X,x_min,x_max,mat_x_min,mat_x_max);
+    int fig1Y_coord = mapC(fig1Y,y_min,y_max,mat_y_min,mat_y_max);
+    putText(graph,"Golfista", Point(fig1X_coord - delta,fig1Y_coord - delta - 10) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+    rectangle(graph, Point(fig1X_coord - delta, fig1Y_coord - delta),Point(fig1X_coord + delta, fig1Y_coord + delta),Scalar(255,0,0),2);
+
+    double fig2X = 0.16;
+    double fig2Y = 0.001;
+
+    int fig2X_coord = mapC(fig2X,x_min,x_max,mat_x_min,mat_x_max);
+    int fig2Y_coord = mapC(fig2Y,y_min,y_max,mat_y_min,mat_y_max);
+    putText(graph,"Pelota", Point(fig2X_coord - delta,fig2Y_coord - delta - 10) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+    rectangle(graph, Point(fig2X_coord - delta, fig2Y_coord - delta),Point(fig2X_coord + delta, fig2Y_coord + delta),Scalar(255,0,0),2);
+
+    double fig3X = 0.2;
+    double fig3Y = 0.005;
+
+    int fig3X_coord = mapC(fig3X,x_min,x_max,mat_x_min,mat_x_max);
+    int fig3Y_coord = mapC(fig3Y,y_min,y_max,mat_y_min,mat_y_max);
+    putText(graph,"Palo ancho", Point(fig3X_coord - delta,fig3Y_coord - delta - 20) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+    rectangle(graph, Point(fig3X_coord - delta, fig3Y_coord - delta),Point(fig3X_coord + delta, fig3Y_coord + delta),Scalar(255,0,0),2);
+
+
+
+    double fig4X = 1.36;
+    double fig4Y = 1.80;
+
+    int fig4X_coord = mapC(fig4X,x_min,x_max,mat_x_min,mat_x_max);
+    int fig4Y_coord = mapC(fig4Y,y_min,y_max,mat_y_min,mat_y_max);
+    putText(graph,"Baston Basic", Point(fig4X_coord - delta*2,fig4Y_coord - delta*2 - 10) , FONT_HERSHEY_COMPLEX, 0.5, Scalar(255,255,255), 0.5,8,false );
+    rectangle(graph, Point(fig4X_coord - delta*6, fig4Y_coord - delta*6),Point(fig4X_coord + delta*6, fig4Y_coord + delta*6),Scalar(255,0,0),2);
+
+
+
+    // circle(graph, Point(fig1X_coord,fig1Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+    // circle(graph, Point(fig2X_coord,fig2Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+    // circle(graph, Point(fig3X_coord,fig3Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+    // circle(graph, Point(fig4X_coord,fig4Y_coord), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+  
+    // plot new point
+
+    int newFigX = mapC(phi1,x_min,x_max,mat_x_min,mat_x_max);
+    int newFigY = mapC(phi2,y_min,y_max,mat_y_min,mat_y_max);
+
+    circle(graph, Point(newFigX,newFigY), 2 ,Scalar(0,0,255),CV_FILLED,8,0);
+
+    // imshow("Grafica de regiones", graph);
+}
+
+int segmentationAndClassification(Mat bgrImage, int rBGR[], int &horAxisFig, int &verAxisFig, int &movAction, bool showImg, bool verbose)
+{
+    Mat bgrFilter;
+    Mat binImage;
+    Mat colormat;
+    Mat graph;
+
+    int recognizedObjects = 0;
+
+    colorFilter(bgrImage,bgrFilter,rBGR);
+    cvtColor(bgrFilter, bgrFilter, CV_BGR2GRAY);
+    
+    gray2threshold(bgrFilter,binImage,80);
+    
+    // each region is a vector of Point
+    vector<vector<Point> > vp = mycontours(binImage,300,colormat);
+
+    // vector to store moments
+    vector<rMoments> vMoments;
+
+    if(verbose) { printf("Number of regions: %lu \n\n", vp.size()); }
+
+    graph.create(700,1000, CV_8UC3);
+    graph.setTo(Scalar(30,30,30));
+
+    for (int i = 0; i< vp.size(); i++) {
+        vMoments.push_back(computeMoments(vp[i]));
+
+        if(verbose) { printf("m00: %Lf  m10:  %Lf  m01: %Lf \n", vMoments[i].m00,vMoments[i].m10,vMoments[i].m01); }
+        if(verbose) { printf("u10: %Lf  u01:  %Lf  u11: %Lf  u20: %Lf  u02: %Lf\n",vMoments[i].u10,vMoments[i].u01,vMoments[i].u11,vMoments[i].u20,vMoments[i].u02 ); }
+        if(verbose) { printf("phi1: %Lf  phi2: %Lf  \n", vMoments[i].phi1, vMoments[i].phi2); }
+
+        int x2 = vMoments[i].m10/vMoments[i].m00 + 100* cos(vMoments[i].theta);
+        int y2 = vMoments[i].m01/vMoments[i].m00 + 100* sin(vMoments[i].theta); 
+        int x3 = vMoments[i].m10/vMoments[i].m00 - 100* cos(vMoments[i].theta);
+        int y3 = vMoments[i].m01/vMoments[i].m00 - 100* sin(vMoments[i].theta); 
+        
+        line(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), Point(x2,y2), Scalar(0,255,0),2 );
+        line(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), Point(x3,y3), Scalar(0,255,0),2 );
+
+        circle(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), 5 ,Scalar(0,0,255),CV_FILLED,8,0);
+
+        if(verbose) { printf("Theta: %Lf \n\n",vMoments[i].theta); }
+        if(showImg) { showRegionGraph(vMoments[i].phi1, vMoments[i].phi2, graph); }
+
+        // Pelota de golf (Adelante)
+        if(vMoments[i].phi1 >= 0.15 && vMoments[i].phi1 <= 0.17 && vMoments[i].phi2 >= 0 && vMoments[i].phi2 <= 0.0005)
+        {
+            if(verbose) { printf("Pelota de golf (Adelante)\n"); }
+            verAxisFig = 1;
+            recognizedObjects++;
+        }
+        // Palo de golf ancho (Atras)
+        else if(vMoments[i].phi1 >= 0.19 && vMoments[i].phi1 <= 0.21 && vMoments[i].phi2 >= 0.003 && vMoments[i].phi2 <= 0.01)
+        {
+            if(verbose) { printf("Palo de golf ancho (Atras)\n"); }
+            verAxisFig = 2;
+            recognizedObjects++;
+        }
+
+        // Golfista (derecha)
+        else if(vMoments[i].phi1 >= 0.36 && vMoments[i].phi1 <= 0.45 && vMoments[i].phi2 >= 0.04 && vMoments[i].phi2 <= 0.1)
+        {
+            if(verbose) { printf("Golfista (derecha) con theta %Lf\n", vMoments[i].theta); }
+            horAxisFig = 1;
+            if(vMoments[i].theta >= 0)
+            {
+                if(verbose) { printf("Ir hacia abajo\n"); }
+                movAction = 2;
+            }
+            else
+            {
+                if(verbose) { printf("Ir hacia arriba\n"); }
+                movAction = 1;
+            }
+
+            recognizedObjects++;
+        }
+
+        // Palo de golf delgado (izquierda)
+        else if(vMoments[i].phi1 >= 0.9 && vMoments[i].phi2 >= 0.9)
+        {
+            if(verbose) { printf("Palo de golf delgado (izquierda) con theta %Lf\n", vMoments[i].theta); }
+            horAxisFig = 2;
+            if(vMoments[i].theta >= 0)
+            {
+                if(verbose) { printf("Ir hacia abajo\n"); }
+                movAction = 2;
+            }
+            else
+            {
+                if(verbose) { printf("Ir hacia arriba\n"); }
+                movAction = 1;
+            }
+
+            recognizedObjects++;
+        }
+
+    }
+
+    if(showImg) { imshow("Segmentacion",colormat); }
+    if(showImg) { imshow("Grafica de regiones", graph); }
+    
+    waitKey(100);
+
+    if(verbose) { printf("Recognized objects: %d\n", recognizedObjects); }
+
+    return recognizedObjects;
 }
 
 #endif
