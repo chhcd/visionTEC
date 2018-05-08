@@ -209,13 +209,14 @@ void calibrationMode(uint8_t key)
 {
     if(!freezeImage){
         //image is captured
-        heli->renewImage(image);
+        // heli->renewImage(image);
 
         // Copy to OpenCV Mat
-        rawToMat(bgrImage, image);
+        // rawToMat(bgrImage, image);
+
 
         //// TODO CHANGE
-        // bgrImage = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
+        bgrImage = imread("../fotosVision/muestra1.jpg", CV_LOAD_IMAGE_COLOR);
 
         /* Obtain a new frame from camera */
         //camera.read(bgrImage);
@@ -502,10 +503,10 @@ void objectDetectionMode(uint8_t key)
     {
         //// TODO TODO
         //image is captured
-        heli->renewImage(image);
+        // heli->renewImage(image);
 
         // Copy to OpenCV Mat
-        rawToMat(bgrImage, image);
+        // rawToMat(bgrImage, image);
 
         imshow("Current image", bgrImage);
 
@@ -695,7 +696,7 @@ void objectDetectionMode(uint8_t key)
         Mat yiqFilter;
 
         //// TODO CHANGE
-        // frame = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
+        frame = imread("../fotosVision/muestra1.jpg", CV_LOAD_IMAGE_COLOR);
 
         colorFilter(bgrImage,yiqFilter,rBGR);
         cvtColor(yiqFilter, yiqFilter, CV_BGR2GRAY);

@@ -1,5 +1,5 @@
-#define X_MAX 640
-#define Y_MAX 480
+#define X_MAX 320
+#define Y_MAX 240
 
 #include <iostream>
 #include <opencv2/imgproc/imgproc.hpp>
