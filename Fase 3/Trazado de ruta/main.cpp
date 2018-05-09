@@ -63,32 +63,34 @@ void simulatePath(Mat sourceImage, vector<Point> &vPath){
 	destroyWindow("Drone location");
 }
 
-void computeRoute(Mat sourceImage, Mat binImage, int side_selection){
+void computeRoutes(Mat sourceImage, Mat binImage, int side_selection) {
 
-	// Add INITIAL POINT and FINAL POINT
-	vec_pivots.push_back(Point(START_POINT)); circle(sourceImage, Point(START_POINT), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
-	vec_pivots.push_back(Point(END_POINT_1)); circle(sourceImage, Point(END_POINT_1), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
+    // Add INITIAL POINT and FINAL POINT
+    vec_pivots.push_back(Point(START_POINT)); circle(sourceImage, Point(START_POINT), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
+    vec_pivots.push_back(Point(END_POINT_1)); circle(sourceImage, Point(END_POINT_1), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
 
-	// pivoting the image
-	genPathPivots(sourceImage,binImage,N_PIVOTS,vec_pivots,side_selection);
+    // pivoting the image
+    genPathPivots(sourceImage,binImage,N_PIVOTS,vec_pivots,side_selection);
 
-	// creating the graph by joining the pivots, draws the graph and reuturns Ady. Matrix
-	mDistances = genGraph(sourceImage,binImage,vec_pivots, N_NEIGHBORS);
+    // creating the graph by joining the pivots, draws the graph and reuturns Ady. Matrix
+    mDistances = genGraph(sourceImage,binImage,vec_pivots, N_NEIGHBORS);
+}
 
-	// Get the path 
-	vector<Point> vPath =  my_dijkstra(mDistances,vec_pivots,0);
-	
-	int i;
-	printf("(%d,%d)", vPath[0].x,vPath[0].y);
-	for(i = 1; i < vPath.size(); i++){
-		printf("->(%d,%d)", vPath[i].x,vPath[i].y);
-		line(sourceImage, vPath[i], vPath[i-1],  Scalar(0,255,0),3);
-	}
+vector<Point> traceShortestPath(Mat &sourceImage)
+{
+    // Get the path 
+    vector<Point> vPath = my_dijkstra(mDistances,vec_pivots,0);
+    
+    int i;
+    printf("(%d,%d)", vPath[0].x,vPath[0].y);
+    for(i = 1; i < vPath.size(); i++){
+        printf("->(%d,%d)", vPath[i].x,vPath[i].y);
+        line(sourceImage, vPath[i], vPath[i-1],  Scalar(0,255,0),3);
+    }
 
-	printf("\n");
+    printf("\n");
 
-	// Uncomment this line to simulate the path
-	simulatePath(sourceImage, vPath);
+    return vPath;
 }
 
 void widenObstacles(Mat sourceImage, Mat &destinationImage)
@@ -128,7 +130,12 @@ int main() {
 
 	// Call this dunction to perform the path from initial point to END_POINT_1 or END_POINT_2
 	// Last param could be: GOING_LEFT, GOING_RIGHT, GOING_NORMAL
-	computeRoute(obsImage,binImage,GOING_LEFT);
+	computeRoutes(obsImage,binImage,GOING_LEFT);
+
+	vector<Point> vPath = traceShortestPath(obsImage);
+
+	// Uncomment this line to simulate the path
+	simulatePath(obsImage, vPath);
 	
 	// wait to close program, while loop is cuz my vm has a weird bounce
 	char c = waitKey(100);

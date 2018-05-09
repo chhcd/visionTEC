@@ -21,7 +21,8 @@ int drone_rad = 25;
 /* Declaring all the image matrices */
 Mat bgrImage = Mat(240, 320, CV_8UC3);
 Mat obsRealImage = imread("../src/imagen_obstaculos.png");
-Mat obsWidenImage;
+Mat drone = imread("../src/parrot.jpg");
+Mat obsWidenImage = obsRealImage.clone();
 Mat bHistogram;
 Mat gHistogram;
 Mat rHistogram;
@@ -88,6 +89,9 @@ int joypadRoll, joypadPitch, joypadVerticalSpeed, joypadYaw;
 bool navigatedWithJoystick, joypadTakeOff, joypadLand, joypadHover, joypadAutonomous;
 string ultimo = "init";
 
+vector<Point> vec_pivots;
+// Adyacences matrix
+vector< vector<long> > mDistances;
 
 Mat imagenClick;
 
@@ -226,6 +230,62 @@ void widenObstacles(Mat sourceImage, Mat &destinationImage)
     circle(destinationImage, Point(356,536), drone_rad + delta + 17, Scalar(0,200,0), -1);
     circle(destinationImage, Point(356,276), 17, Scalar(0,255,0), -1);
     circle(destinationImage, Point(356,536), 17, Scalar(0,255,0), -1);
+}
+
+void plotDrone(Mat sourceImage, Point coord){
+    resize(drone, drone, Size(2*drone_rad, 2*drone_rad));
+    Mat tempShow = sourceImage.clone();
+    
+    // inside limits, not needed when Dieguin lombrin is done
+    if(coord.x -  drone_rad > 0 && coord.y - drone_rad > 0  && coord.x +  drone_rad < sourceImage.cols &&  coord.y +  drone_rad < sourceImage.rows)
+        drone.copyTo(tempShow(Rect(coord.x -  drone_rad,coord.y - drone_rad ,drone.cols,drone.rows)));
+    
+    imshow("Drone location", tempShow);
+}
+
+
+void simulatePath(Mat sourceImage, vector<Point> &vPath){
+    for(int i = 0; i < vPath.size(); i++){
+        plotDrone(sourceImage, vPath[i]);
+        printf("%d--------\n",i );
+        char c = 'a';
+        while(c != 'p'){
+            c = waitKey(100);
+        }
+
+    }
+
+    destroyWindow("Drone location");
+}
+
+void computeRoutes(Mat sourceImage, Mat binImage, int side_selection) {
+
+    // Add INITIAL POINT and FINAL POINT
+    vec_pivots.push_back(Point(START_POINT)); circle(sourceImage, Point(START_POINT), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
+    vec_pivots.push_back(Point(END_POINT_1)); circle(sourceImage, Point(END_POINT_1), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
+
+    // pivoting the image
+    genPathPivots(sourceImage,binImage,N_PIVOTS,vec_pivots,side_selection);
+
+    // creating the graph by joining the pivots, draws the graph and reuturns Ady. Matrix
+    mDistances = genGraph(sourceImage,binImage,vec_pivots, N_NEIGHBORS);
+}
+
+vector<Point> traceShortestPath(Mat &sourceImage)
+{
+    // Get the path 
+    vector<Point> vPath = my_dijkstra(mDistances,vec_pivots,0);
+    
+    int i;
+    printf("(%d,%d)", vPath[0].x,vPath[0].y);
+    for(i = 1; i < vPath.size(); i++){
+        printf("->(%d,%d)", vPath[i].x,vPath[i].y);
+        line(sourceImage, vPath[i], vPath[i-1],  Scalar(0,255,0),3);
+    }
+
+    printf("\n");
+
+    return vPath;
 }
 
 void calibrationMode(uint8_t key)
@@ -710,11 +770,21 @@ void routeMode(uint8_t key)
             case 'm': bManualMovement = false; break;
             case 'b':
                 if(bSize){ destroyWindow("Drone size"); }
-                    bSize = !bSize;
+                bSize = !bSize;
                 break;
             case 'f':
-                // if(bRoutes){ destroyWindow("Segmentacion"); destroyWindow("Grafica de regiones"); }
-                    // bRoutes = !bRoutes;
+                if(bRoutes){ destroyWindow("Graph"); }
+                else
+                {
+                    color2gray(obsWidenImage,grayImage);
+                    threshold(grayImage, binImage, 240, 255, 1);
+
+                    // Call this function to perform the path from initial point to END_POINT_1 or END_POINT_2
+                    // Last param could be: GOING_LEFT, GOING_RIGHT, GOING_NORMAL
+                    computeRoutes(obsWidenImage,binImage,GOING_NORMAL);
+                }
+
+                bRoutes = !bRoutes;
                 break;
         }
 
@@ -724,11 +794,6 @@ void routeMode(uint8_t key)
             namedWindow("Drone size");
             createTrackbar( "Drone radius", "Drone size", &drone_rad, 50, NULL);
             imshow("Drone size", obsWidenImage);
-        }
-
-        if(bRoutes)
-        {
-
         }
 
         if (useJoystick)
