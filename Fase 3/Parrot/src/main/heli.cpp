@@ -217,13 +217,15 @@ void widenObstacles(Mat sourceImage, Mat &destinationImage)
 
     destinationImage = sourceImage.clone();
 
-    rectangle(destinationImage, Rect(0,39,sourceImage.cols,drone_rad + delta), Scalar(0,0,0), -1);
-    rectangle(destinationImage, Rect(5,39,drone_rad + delta,sourceImage.rows - 39), Scalar(0,0,0), -1);
-    rectangle(destinationImage, Rect(0,sourceImage.rows - drone_rad - delta - 5,sourceImage.cols,drone_rad + delta), Scalar(0,0,0), -1);
-    rectangle(destinationImage, Rect(sourceImage.cols - drone_rad - delta - 5,39,drone_rad + delta,sourceImage.rows - 39), Scalar(0,0,0), -1);
+    rectangle(destinationImage, Rect(5,39,sourceImage.cols - 10,drone_rad + delta), Scalar(140,140,140), -1);
+    rectangle(destinationImage, Rect(5,39,drone_rad + delta,sourceImage.rows - 39 - 5), Scalar(140,140,140), -1);
+    rectangle(destinationImage, Rect(5,sourceImage.rows - drone_rad - delta - 5,sourceImage.cols - 10,drone_rad + delta), Scalar(140,140,140), -1);
+    rectangle(destinationImage, Rect(sourceImage.cols - drone_rad - delta - 5,39,drone_rad + delta,sourceImage.rows - 39 - 5), Scalar(140,140,140), -1);
 
-    circle(destinationImage, Point(356,276), drone_rad + delta + 17, Scalar(0,255,0), -1);
-    circle(destinationImage, Point(356,536), drone_rad + delta + 17, Scalar(0,255,0), -1);
+    circle(destinationImage, Point(356,276), drone_rad + delta + 17, Scalar(0,200,0), -1);
+    circle(destinationImage, Point(356,536), drone_rad + delta + 17, Scalar(0,200,0), -1);
+    circle(destinationImage, Point(356,276), 17, Scalar(0,255,0), -1);
+    circle(destinationImage, Point(356,536), 17, Scalar(0,255,0), -1);
 }
 
 void calibrationMode(uint8_t key)
