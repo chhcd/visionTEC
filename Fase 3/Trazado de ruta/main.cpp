@@ -1,6 +1,6 @@
 
 #define PI 3.14159265
-#define START_POINT 360	,700
+#define START_POINT 360,700
 #define END_POINT_1 360,70
 #define END_POINT_2 360,360
 #define N_PIVOTS 150
@@ -25,7 +25,6 @@
 
 using namespace std;
 using namespace cv;
-
 
 Mat img = imread("imagen_obstaculos.png");
 // Mat img = imread("test2.png");
@@ -63,6 +62,7 @@ void simulatePath(vector<Point> &vPath){
 		}
 
 	}
+	
 	destroyWindow("Drone location");
 }
 
@@ -87,24 +87,22 @@ void computeRoute(Mat img, Mat binImage, int side_selection){
 		printf("->(%d,%d)", vPath[i].x,vPath[i].y);
 		line(img, vPath[i], vPath[i-1],  Scalar(0,255,0),3);
 	}
+
 	printf("\n");
 
 	// Uncomment this line to simulate the path
 	simulatePath(vPath);
-
-
 }
 
 
 
-int main(){
-	
+int main() {
 	Mat binImage;	gray2threshold(grayImage,binImage,240);
 	imshow("binImage",binImage);
 
 
 	// Call this dunction to perform the path from initial point to END_POINT_1 or END_POINT_2
-	// Last param could be: GOING_LEFT, GOING_RIGHT, GOINT_NORMAL
+	// Last param could be: GOING_LEFT, GOING_RIGHT, GOING_NORMAL
 	computeRoute(img,binImage,GOING_LEFT);
 
 	imshow("pivoted image",img);
@@ -116,10 +114,7 @@ int main(){
 		c = waitKey(100);
 	}
 
-
 	destroyAllWindows();
 	
-
-
 	return 0;
 }
