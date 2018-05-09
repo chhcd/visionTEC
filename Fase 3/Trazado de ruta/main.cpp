@@ -29,32 +29,29 @@ using namespace cv;
 Mat img = imread("imagen_obstaculos.png");
 // Mat img = imread("test2.png");
 Mat colormat;
-// Mat grayImage = imread("test2.png",CV_LOAD_IMAGE_GRAYSCALE);
-Mat grayImage = imread("imagen_obstaculos.png",CV_LOAD_IMAGE_GRAYSCALE);
 Mat drone = imread("parrot.jpg");
 
 vector<Point> vec_pivots;
 // Adyacences matrix
 vector< vector<long> > mDistances;
 
+int drone_rad = 25;
 
-
-void plotDrone(Point coord){
-	int drone_size = 50;
-	resize(drone, drone, Size(drone_size, drone_size));
-	Mat tempShow = img.clone();
+void plotDrone(Mat sourceImage, Point coord){
+	resize(drone, drone, Size(2*drone_rad, 2*drone_rad));
+	Mat tempShow = sourceImage.clone();
 	
 	// inside limits, not needed when Dieguin lombrin is done
-	if(coord.x -  drone_size/2 > 0 && coord.y - drone_size/2 > 0  && coord.x +  drone_size/2 < img.cols &&  coord.y +  drone_size/2 < img.rows)
-		drone.copyTo(tempShow(Rect(coord.x -  drone_size/2,coord.y - drone_size/2 ,drone.cols,drone.rows)));
+	if(coord.x -  drone_rad > 0 && coord.y - drone_rad > 0  && coord.x +  drone_rad < sourceImage.cols &&  coord.y +  drone_rad < sourceImage.rows)
+		drone.copyTo(tempShow(Rect(coord.x -  drone_rad,coord.y - drone_rad ,drone.cols,drone.rows)));
 	
 	imshow("Drone location", tempShow);
 }
 
 
-void simulatePath(vector<Point> &vPath){
+void simulatePath(Mat sourceImage, vector<Point> &vPath){
 	for(int i = 0; i < vPath.size(); i++){
-		plotDrone(vPath[i]);
+		plotDrone(sourceImage, vPath[i]);
 		printf("%d--------\n",i );
 		char c = 'a';
 		while(c != 'p'){
@@ -62,21 +59,21 @@ void simulatePath(vector<Point> &vPath){
 		}
 
 	}
-	
+
 	destroyWindow("Drone location");
 }
 
-void computeRoute(Mat img, Mat binImage, int side_selection){
+void computeRoute(Mat sourceImage, Mat binImage, int side_selection){
 
 	// Add INITIAL POINT and FINAL POINT
-	vec_pivots.push_back(Point(START_POINT)); circle(img, Point(START_POINT), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
-	vec_pivots.push_back(Point(END_POINT_1)); circle(img, Point(END_POINT_1), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
+	vec_pivots.push_back(Point(START_POINT)); circle(sourceImage, Point(START_POINT), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
+	vec_pivots.push_back(Point(END_POINT_1)); circle(sourceImage, Point(END_POINT_1), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
 
 	// pivoting the image
-	genPathPivots(img,binImage,N_PIVOTS,vec_pivots,side_selection);
+	genPathPivots(sourceImage,binImage,N_PIVOTS,vec_pivots,side_selection);
 
 	// creating the graph by joining the pivots, draws the graph and reuturns Ady. Matrix
-	mDistances = genGraph(img,binImage,vec_pivots, N_NEIGHBORS);
+	mDistances = genGraph(sourceImage,binImage,vec_pivots, N_NEIGHBORS);
 
 	// Get the path 
 	vector<Point> vPath =  my_dijkstra(mDistances,vec_pivots,0);
@@ -85,28 +82,51 @@ void computeRoute(Mat img, Mat binImage, int side_selection){
 	printf("(%d,%d)", vPath[0].x,vPath[0].y);
 	for(i = 1; i < vPath.size(); i++){
 		printf("->(%d,%d)", vPath[i].x,vPath[i].y);
-		line(img, vPath[i], vPath[i-1],  Scalar(0,255,0),3);
+		line(sourceImage, vPath[i], vPath[i-1],  Scalar(0,255,0),3);
 	}
 
 	printf("\n");
 
 	// Uncomment this line to simulate the path
-	simulatePath(vPath);
+	simulatePath(sourceImage, vPath);
 }
 
+void widenObstacles(Mat sourceImage, Mat &destinationImage)
+{
+	// Delta it's a protection for the environment, for example, the drone wiggling
+	int delta = 5;
 
+	if (destinationImage.empty())
+		destinationImage = sourceImage.clone();
+
+	rectangle(destinationImage, Rect(0,39,sourceImage.cols,drone_rad + delta), Scalar(0,0,0), -1);
+	rectangle(destinationImage, Rect(5,39,drone_rad + delta,sourceImage.rows - 39), Scalar(0,0,0), -1);
+	rectangle(destinationImage, Rect(0,sourceImage.rows - drone_rad - delta - 5,sourceImage.cols,drone_rad + delta), Scalar(0,0,0), -1);
+	rectangle(destinationImage, Rect(sourceImage.cols - drone_rad - delta - 5,39,drone_rad + delta,sourceImage.rows - 39), Scalar(0,0,0), -1);
+
+	circle(destinationImage, Point(356,276), drone_rad + delta + 17, Scalar(0,255,0), -1);
+	circle(destinationImage, Point(356,536), drone_rad + delta + 17, Scalar(0,255,0), -1);
+}
 
 int main() {
-	Mat binImage;	gray2threshold(grayImage,binImage,240);
-	imshow("binImage",binImage);
+	Mat binImage;
+	Mat obsImage;
+	Mat grayImage;
 
+	imshow("obstacles", img);
+	
+	widenObstacles(img, obsImage);
+    namedWindow("Drone size");
+    createTrackbar( "Drone radius", "Drone size", &drone_rad, 50, NULL);
+	imshow("Drone size", obsImage);
+
+	color2gray(obsImage,grayImage);
+	gray2threshold(grayImage,binImage,240);
+	imshow("binImage",binImage);
 
 	// Call this dunction to perform the path from initial point to END_POINT_1 or END_POINT_2
 	// Last param could be: GOING_LEFT, GOING_RIGHT, GOING_NORMAL
-	computeRoute(img,binImage,GOING_LEFT);
-
-	imshow("pivoted image",img);
-	// imshow("gray image",grayImage);
+	computeRoute(obsImage,binImage,GOING_LEFT);
 	
 	// wait to close program, while loop is cuz my vm has a weird bounce
 	char c = waitKey(100);
