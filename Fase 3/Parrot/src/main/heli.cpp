@@ -256,12 +256,12 @@ void simulatePath(Mat sourceImage, vector<Point> &vPath){
     destroyWindow("Drone location");
 }
 
-void computeRoutes(Mat sourceImage, Mat binImage) {
+void computeRoutes(Mat sourceImage, Mat binImage, Point endPoint) {
 
     // Add INITIAL POINT and FINAL POINT
     vec_pivots.clear();
-    vec_pivots.push_back(Point(END_POINT_1)); circle(sourceImage, Point(END_POINT_1), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
-    vec_pivots.push_back(Point(START_POINT)); circle(sourceImage, Point(START_POINT), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
+    vec_pivots.push_back(endPoint); circle(sourceImage, endPoint, 10 ,Scalar(200,200,0),CV_FILLED,8,0);
+    vec_pivots.push_back(START_POINT); circle(sourceImage, START_POINT, 10 ,Scalar(200,200,0),CV_FILLED,8,0);
 
     // pivoting the image
     genPathPivots(sourceImage,binImage,N_PIVOTS,vec_pivots);
@@ -781,7 +781,7 @@ void routeMode(uint8_t key)
                     Mat routedImage = obsWidenImage.clone();
                     // Call this function to perform the path from initial point to END_POINT_1 or END_POINT_2
                     // Last param could be: GOING_LEFT, GOING_RIGHT, GOING_NORMAL
-                    computeRoutes(routedImage,binImage);
+                    computeRoutes(routedImage,binImage,END_POINT_1);
                 }
 
                 bRoutes = !bRoutes;

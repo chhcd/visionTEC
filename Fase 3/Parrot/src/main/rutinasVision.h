@@ -26,9 +26,9 @@ using namespace cv;
 #define GOING_NORMAL 2
 
 #define PI 3.14159265
-#define START_POINT 356,158
-#define END_POINT_1 356,406
-#define END_POINT_2 356,666
+#define START_POINT Point(356,158)
+#define END_POINT_1 Point(356,406)
+#define END_POINT_2 Point(356,666)
 #define N_PIVOTS 150
 #define N_NEIGHBORS 5
 

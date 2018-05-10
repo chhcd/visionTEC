@@ -1,8 +1,8 @@
 
 #define PI 3.14159265
-#define START_POINT 356,158
-#define END_POINT_1 356,406
-#define END_POINT_2 356,666
+#define START_POINT Point(356,158)
+#define END_POINT_1 Point(356,406)
+#define END_POINT_2 Point(356,666)
 #define N_PIVOTS 150
 #define N_NEIGHBORS 5
 
@@ -61,11 +61,11 @@ void simulatePath(Mat sourceImage, vector<Point> &vPath){
 	destroyWindow("Drone location");
 }
 
-void computeRoutes(Mat sourceImage, Mat binImage) {
+void computeRoutes(Mat sourceImage, Mat binImage, Point endPoint) {
 
     // Add INITIAL POINT and FINAL POINT
-    vec_pivots.push_back(Point(END_POINT_2)); circle(sourceImage, Point(END_POINT_2), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
-    vec_pivots.push_back(Point(START_POINT)); circle(sourceImage, Point(START_POINT), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
+    vec_pivots.push_back(endPoint); circle(sourceImage, endPoint, 10 ,Scalar(200,200,0),CV_FILLED,8,0);
+    vec_pivots.push_back(START_POINT); circle(sourceImage, START_POINT, 10 ,Scalar(200,200,0),CV_FILLED,8,0);
 
     // pivoting the image
     genPathPivots(sourceImage,binImage,N_PIVOTS,vec_pivots);
@@ -128,7 +128,7 @@ int main() {
 
 	// Call this dunction to perform the path from initial point to END_POINT_1 or END_POINT_2
 	// Last param could be: GOING_LEFT, GOING_RIGHT, GOING_NORMAL
-	computeRoutes(obsImage,binImage);
+	computeRoutes(obsImage,binImage, END_POINT_2);
 
 	vector<Point> vPath = traceShortestPath(obsImage,binImage,GOING_LEFT);
 
