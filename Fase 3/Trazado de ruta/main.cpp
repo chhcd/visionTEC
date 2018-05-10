@@ -1,8 +1,8 @@
 
 #define PI 3.14159265
-#define START_POINT 360,700
-#define END_POINT_1 360,70
-#define END_POINT_2 360,360
+#define START_POINT 356,158
+#define END_POINT_1 356,406
+#define END_POINT_2 356,666
 #define N_PIVOTS 150
 #define N_NEIGHBORS 5
 
@@ -64,8 +64,8 @@ void simulatePath(Mat sourceImage, vector<Point> &vPath){
 void computeRoutes(Mat sourceImage, Mat binImage) {
 
     // Add INITIAL POINT and FINAL POINT
+    vec_pivots.push_back(Point(END_POINT_2)); circle(sourceImage, Point(END_POINT_2), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
     vec_pivots.push_back(Point(START_POINT)); circle(sourceImage, Point(START_POINT), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
-    vec_pivots.push_back(Point(END_POINT_1)); circle(sourceImage, Point(END_POINT_1), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
 
     // pivoting the image
     genPathPivots(sourceImage,binImage,N_PIVOTS,vec_pivots);

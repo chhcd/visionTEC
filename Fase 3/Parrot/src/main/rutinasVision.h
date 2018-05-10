@@ -26,9 +26,9 @@ using namespace cv;
 #define GOING_NORMAL 2
 
 #define PI 3.14159265
-#define START_POINT 360,700
-#define END_POINT_1 360,70
-#define END_POINT_2 360,360
+#define START_POINT 356,158
+#define END_POINT_1 356,406
+#define END_POINT_2 356,666
 #define N_PIVOTS 150
 #define N_NEIGHBORS 5
 
@@ -676,8 +676,8 @@ bool distanceSort(pair<int,Point> p1, pair<int,Point> p2){
 }
 
 void genGraph(Mat const &sourceImage, Mat const &binImage, vector<Point> &piv_coords, int nn){
-  Mat drawImg = sourceImage.clone();
-  // Mat drawImg = sourceImage;
+  // Mat drawImg = sourceImage.clone();
+  Mat drawImg = sourceImage;
 
   // Adyacences matrix
   vector< vector<long> > mDistances;
