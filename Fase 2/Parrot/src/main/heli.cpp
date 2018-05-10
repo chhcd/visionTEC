@@ -208,20 +208,13 @@ void calibrationMode(uint8_t key)
 {
     if(!freezeImage){
         //image is captured
-        // heli->renewImage(image);
+        heli->renewImage(image);
 
         // Copy to OpenCV Mat
-        // rawToMat(bgrImage, image);
-<<<<<<< HEAD
-
+        rawToMat(bgrImage, image);
 
         //// TODO CHANGE
-        bgrImage = imread("../fotosVision/muestra1.jpg", CV_LOAD_IMAGE_COLOR);
-=======
-
-        //// TODO CHANGE
-        bgrImage = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
->>>>>>> fcf7cc3d8665ee47a0848625e3b22ec03990658d
+        // bgrImage = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
 
         /* Obtain a new frame from camera */
         //camera.read(bgrImage);
@@ -419,10 +412,10 @@ void objectDetectionMode(uint8_t key)
     {
         //// TODO TODO
         //image is captured
-        // heli->renewImage(image);
+        heli->renewImage(image);
 
         // Copy to OpenCV Mat
-        // rawToMat(bgrImage, image);
+        rawToMat(bgrImage, image);
 
         imshow("Current image", bgrImage);
 
@@ -535,126 +528,9 @@ void objectDetectionMode(uint8_t key)
     }
     else
     {
-<<<<<<< HEAD
-        Mat frame;
-        Mat img;
-        Mat binImage;
-        Mat colormat;
-        Mat yiq;
-        Mat yiqFilter;
-
-        //// TODO CHANGE
-        frame = imread("../fotosVision/muestra1.jpg", CV_LOAD_IMAGE_COLOR);
-
-        colorFilter(bgrImage,yiqFilter,rBGR);
-        cvtColor(yiqFilter, yiqFilter, CV_BGR2GRAY);
-
-        // imshow("img", yiqFilter);
-        
-        gray2threshold(yiqFilter,binImage,80);
-        // imshow("bin",binImage);
-        
-        vector<vector<Point> > vp;
-        // each region is a vector of Point
-        vp = mycontours(binImage,300,colormat);
-
-        // vector to store moments
-        vector<rMoments> vMoments;
-
-
-        printf("Number of regions: %lu \n\n", vp.size()); 
-
-        int recognizedObjects = 0;
-        int horAxisFig = 0;
-        int verAxisFig = 0;
-        int movAction = 0;
-
-        graph.create(700,1000, CV_8UC3);
-        graph.setTo(Scalar(30,30,30));
-
-        for (int i = 0; i< vp.size(); i++){
-            vMoments.push_back(computeMoments(vp[i]));
-
-            // printf("m00: %Lf  m10:  %Lf  m01: %Lf \n", vMoments[i].m00,vMoments[i].m10,vMoments[i].m01);
-            // printf("u10: %Lf  u01:  %Lf  u11: %Lf  u20: %Lf  u02: %Lf\n",vMoments[i].u10,vMoments[i].u01,vMoments[i].u11,vMoments[i].u20,vMoments[i].u02 );
-            printf("phi1: %Lf  phi2: %Lf  \n", vMoments[i].phi1, vMoments[i].phi2);
-
-            int x2 = vMoments[i].m10/vMoments[i].m00 + 100* cos(vMoments[i].theta);
-            int y2 = vMoments[i].m01/vMoments[i].m00 + 100* sin(vMoments[i].theta); 
-            int x3 = vMoments[i].m10/vMoments[i].m00 - 100* cos(vMoments[i].theta);
-            int y3 = vMoments[i].m01/vMoments[i].m00 - 100* sin(vMoments[i].theta); 
-            
-            line(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), Point(x2,y2), Scalar(0,255,0),2 );
-            line(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), Point(x3,y3), Scalar(0,255,0),2 );
-
-            printf("Theta: %Lf \n\n",vMoments[i].theta); 
-            circle(colormat, Point(vMoments[i].m10/vMoments[i].m00, vMoments[i].m01/vMoments[i].m00), 5 ,Scalar(0,0,255),CV_FILLED,8,0);
-
-            imshow("Color",colormat);
-
-            showRegionGraph(vMoments[i].phi1, vMoments[i].phi2);
-
-            // Pelota de golf (Adelante)
-            if(vMoments[i].phi1 >= 0.15 && vMoments[i].phi1 <= 0.17 && vMoments[i].phi2 >= 0 && vMoments[i].phi2 <= 0.0005)
-            {
-                printf("Pelota de golf (Adelante)\n");
-                verAxisFig = 1;
-                recognizedObjects++;
-            }
-            // Palo de golf ancho (Atras)
-            else if(vMoments[i].phi1 >= 0.19 && vMoments[i].phi1 <= 0.21 && vMoments[i].phi2 >= 0.003 && vMoments[i].phi2 <= 0.01)
-            {
-                printf("Palo de golf ancho (Atras)\n");
-                verAxisFig = 2;
-                recognizedObjects++;
-            }
-
-            // Golfista (derecha)
-            else if(vMoments[i].phi1 >= 0.36 && vMoments[i].phi1 <= 0.45 && vMoments[i].phi2 >= 0.04 && vMoments[i].phi2 <= 0.1)
-            {
-                printf("Golfista (derecha)\n");
-                horAxisFig = 1;
-                if(vMoments[i].theta >= 0)
-                {
-                    printf("Ir hacia abajo\n");
-                    movAction = 2;
-                }
-                else
-                {
-                    printf("Ir hacia arriba\n");
-                    movAction = 1;
-                }
-
-                recognizedObjects++;
-            }
-
-            // Palo de golf delgado (izquierda)
-            else if(vMoments[i].phi1 >= 0.9 && vMoments[i].phi2 >= 0.9)
-            {
-                printf("Palo de golf delgado (izquierda)\n");
-                horAxisFig = 2;
-                if(vMoments[i].theta >= 0)
-                {
-                    printf("Ir hacia abajo\n");
-                    movAction = 2;
-                }
-                else
-                {
-                    printf("Ir hacia arriba\n");
-                    movAction = 1;
-                }
-
-                recognizedObjects++;
-            }
-
-        }
-        imshow("Grafica de regiones", graph);
-        waitKey(100);
-=======
         int horAxisFig;
         int verAxisFig;
         int movAction;
->>>>>>> fcf7cc3d8665ee47a0848625e3b22ec03990658d
 
         int recognizedObjects = segmentationAndClassification(bgrImage, rBGR, horAxisFig, verAxisFig, movAction, true, false);
 

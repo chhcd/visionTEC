@@ -6,15 +6,17 @@ SUBDIRS+=main
 
 OBJS=$(wildcard ../obj/*.o)
 LXXLIBS+=-L/usr/local/lib
-LXXLIBS+=-lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_imgproc -lSDL -lpthread -lopencv_imgcodecs
+LXXLIBS+=-lopencv_core -lopencv_highgui -lopencv_features2d -lopencv_imgproc -lSDL -lpthread
 
 COPY_ETC_CMD=../etc/copy.sh
 COPY_ETC_SRC=../etc
 COPY_ETC_DST=../bin
 
 heli: all obj
-	$(CXX) $(CXXDEFINE) -o ../bin/$@  $(OBJS)  $(CXXFLAGS) $(LXXLIBS) 
+	$(CXX) $(CXXDEFINE) -o ../bin/$@  $(OBJS)  $(CXXFLAGS) $(LXXLIBS)
 
+3: all obj
+	$(CXX) $(CXXDEFINE) -o ../bin/$@  $(OBJS)  $(CXXFLAGS) $(LXXLIBS) -lopencv_imgcodecs
 
 all:
 	echo $(OPSYS)

@@ -23,7 +23,23 @@
 using namespace std;
 using namespace cv;
 
+void color2gray(const Mat &sourceImage, Mat &destinationImage)
+{
+	if (destinationImage.empty())
+		destinationImage = Mat(sourceImage.rows, sourceImage.cols, CV_8UC1);
 
+	int grayValue = 0;
+	for (int y = 0; y < sourceImage.rows; ++y){
+		for (int x = 0; x < sourceImage.cols ; ++x){
+			grayValue = 0;
+			for (int i = 0; i < sourceImage.channels(); ++i)
+			{
+				grayValue += sourceImage.at<Vec3b>(y, x)[i] ;
+			}
+			destinationImage.at<uint8_t>(y,x) = grayValue/3;
+		}
+	}
+}
 
 void gray2threshold(const Mat &sourceImage, Mat &binImage, uint8_t threshold_value){
   /* 
