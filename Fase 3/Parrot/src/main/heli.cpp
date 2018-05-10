@@ -90,8 +90,6 @@ bool navigatedWithJoystick, joypadTakeOff, joypadLand, joypadHover, joypadAutono
 string ultimo = "init";
 
 vector<Point> vec_pivots;
-// Adyacences matrix
-vector< vector<long> > mDistances;
 
 Mat imagenClick;
 
@@ -261,6 +259,7 @@ void simulatePath(Mat sourceImage, vector<Point> &vPath){
 void computeRoutes(Mat sourceImage, Mat binImage) {
 
     // Add INITIAL POINT and FINAL POINT
+    vec_pivots.clear();
     vec_pivots.push_back(Point(START_POINT)); circle(sourceImage, Point(START_POINT), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
     vec_pivots.push_back(Point(END_POINT_1)); circle(sourceImage, Point(END_POINT_1), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
 
@@ -779,9 +778,10 @@ void routeMode(uint8_t key)
                     color2gray(obsWidenImage,grayImage);
                     threshold(grayImage, binImage, 240, 255, 1);
 
+                    Mat routedImage = obsWidenImage.clone();
                     // Call this function to perform the path from initial point to END_POINT_1 or END_POINT_2
                     // Last param could be: GOING_LEFT, GOING_RIGHT, GOING_NORMAL
-                    computeRoutes(obsWidenImage,binImage);
+                    computeRoutes(routedImage,binImage);
                 }
 
                 bRoutes = !bRoutes;

@@ -676,8 +676,8 @@ bool distanceSort(pair<int,Point> p1, pair<int,Point> p2){
 }
 
 void genGraph(Mat const &sourceImage, Mat const &binImage, vector<Point> &piv_coords, int nn){
-  // Mat drawImg = sourceImage.clone();
-  Mat drawImg = sourceImage;
+  Mat drawImg = sourceImage.clone();
+  // Mat drawImg = sourceImage;
 
   // Adyacences matrix
   vector< vector<long> > mDistances;

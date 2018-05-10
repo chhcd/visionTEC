@@ -32,8 +32,6 @@ Mat colormat;
 Mat drone = imread("parrot.jpg");
 
 vector<Point> vec_pivots;
-// Adyacences matrix
-vector< vector<long> > mDistances;
 
 int drone_rad = 25;
 
