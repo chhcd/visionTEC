@@ -614,8 +614,8 @@ int segmentationAndClassification(Mat bgrImage, int rBGR[], int &horAxisFig, int
             recognizedObjects++;
         }
 
-        if(showImg) { imshow("Segmentacion",colormat); } // TODO
-        waitKey(0);
+        // if(showImg) { imshow("Segmentacion",colormat); } // TODO
+        // waitKey(0);
     }
 
     if(showImg) { imshow("Segmentacion",colormat); }
@@ -739,7 +739,7 @@ void genGraph(Mat const &sourceImage, Mat const &binImage, vector<Point> &piv_co
 
 vector<Point> my_dijkstra(Mat const &sourceImage, Mat const &binImage,vector<Point> piv_coords,int nn,int side_selection){
   
-  int const middle_padding = 30;
+  int const middle_padding = 0;
   int x_map_max = sourceImage.size().width ;
   int y_map_max = sourceImage.size().height ;
   int const startnode = 0;

@@ -1043,6 +1043,16 @@ void routeMode(uint8_t key)
         {
             // Movimientos del parrot
 
+            // TODO TODO TODO
+            if(movAction == 1)
+            {
+                // Ir hacia arriba
+            }
+            else if(movAction == 2)
+            {
+                // Ir hacia abajo
+            }   
+
             // En medio y derecha
             if(verAxisFig == 1 && horAxisFig == 1)
             {
