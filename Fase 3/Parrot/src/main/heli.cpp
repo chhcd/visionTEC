@@ -945,7 +945,7 @@ void routeMode(uint8_t key)
             case 'o': hover = (hover + 1) % 2; break;
             case 'm': bManualMovement = false; break;
             case 'b':
-                if(bSize){ destroyWindow("Drone size"); }
+                if(bSize){ destroyWindow("Drone size"); destroyWindow("Binary environment"); }
                 bSize = !bSize;
                 break;
             case 'f':
@@ -1068,8 +1068,8 @@ void routeMode(uint8_t key)
                 //Elevar
                 //heli->setAngles(pitch, roll, yaw, height, hover);
                 cout << "Lift" << endl;
-                heli->setAngles(0.0, 0.0, 0.0, -2500.0, 1.0);
-                usleep(1000000);
+                heli->setAngles(0.0, 0.0, 0.0, -3000.0, 1.0);
+                usleep(2000000);
             }
 
             else if (movAction==2)
@@ -1077,8 +1077,8 @@ void routeMode(uint8_t key)
                 //Bajar
                 //heli->setAngles(pitch, roll, yaw, height, hover);
                 cout << "Down" << endl;
-                heli->setAngles(0.0, 0.0, 0.0, 2500.0, 1.0);
-                usleep(1000000);
+                heli->setAngles(0.0, 0.0, 0.0, 3000.0, 1.0);
+                usleep(1700000);
             } 
 
             // En medio y derecha
