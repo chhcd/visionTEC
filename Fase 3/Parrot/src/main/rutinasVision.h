@@ -523,11 +523,13 @@ int segmentationAndClassification(Mat bgrImage, int rBGR[], int &horAxisFig, int
 
     int recognizedObjects = 0;
 
+    GaussianBlur(bgrImage,bgrImage,Size(7,7), 0, 0);
     colorFilter(bgrImage,bgrFilter,rBGR);
     cvtColor(bgrFilter, bgrFilter, CV_BGR2GRAY);
     
     gray2threshold(bgrFilter,binImage,80);
-    
+    dilate(binImage, binImage, Mat(), Point(-1, -1), 1, 1, 1);
+
     // each region is a vector of Point
     vector<vector<Point> > vp = mycontours(binImage,300,colormat);
 
@@ -575,9 +577,9 @@ int segmentationAndClassification(Mat bgrImage, int rBGR[], int &horAxisFig, int
         }
 
         // Golfista (derecha)
-        else if(vMoments[i].phi1 >= 0.36 && vMoments[i].phi1 <= 0.45 && vMoments[i].phi2 >= 0.04 && vMoments[i].phi2 <= 0.1)
+        else if(vMoments[i].phi1 >= 0.30 && vMoments[i].phi1 <= 0.45 && vMoments[i].phi2 >= 0.04 && vMoments[i].phi2 <= 0.1)
         {
-            if(verbose) { printf("Golfista (derecha) con theta %Lf\n", vMoments[i].theta); }
+            if(verbose) { printf("Golfista (derecha)"); }
             horAxisFig = 1;
             if(vMoments[i].theta >= 0)
             {
@@ -594,9 +596,9 @@ int segmentationAndClassification(Mat bgrImage, int rBGR[], int &horAxisFig, int
         }
 
         // Palo de golf delgado (izquierda)
-        else if(vMoments[i].phi1 >= 0.9 && vMoments[i].phi2 >= 0.9)
+        else if(vMoments[i].phi1 >= 0.50 && vMoments[i].phi1 <= 0.65 && vMoments[i].phi2 >= 0.16 && vMoments[i].phi2 <= 0.28)
         {
-            if(verbose) { printf("Palo de golf delgado (izquierda) con theta %Lf\n", vMoments[i].theta); }
+            if(verbose) { printf("Palo de golf delgado (izquierda)"); }
             horAxisFig = 2;
             if(vMoments[i].theta >= 0)
             {
@@ -612,6 +614,8 @@ int segmentationAndClassification(Mat bgrImage, int rBGR[], int &horAxisFig, int
             recognizedObjects++;
         }
 
+        if(showImg) { imshow("Segmentacion",colormat); } // TODO
+        waitKey(0);
     }
 
     if(showImg) { imshow("Segmentacion",colormat); }

@@ -40,6 +40,10 @@ Mat yiqFilter;
 Mat grayImage;
 Mat binImage;
 Mat snapedMat;
+Mat grayObstacles;
+Mat binObstacles;
+Mat routedImageEP1;
+Mat routedImageEP2;
 
 bool bSnap = false;
 bool firstClick = true;
@@ -89,7 +93,8 @@ int joypadRoll, joypadPitch, joypadVerticalSpeed, joypadYaw;
 bool navigatedWithJoystick, joypadTakeOff, joypadLand, joypadHover, joypadAutonomous;
 string ultimo = "init";
 
-vector<Point> vec_pivots;
+vector<Point> vec_pivots_EP1;
+vector<Point> vec_pivots_EP2;
 
 Mat imagenClick;
 
@@ -256,7 +261,7 @@ void simulatePath(Mat sourceImage, vector<Point> &vPath){
     destroyWindow("Drone location");
 }
 
-void computeRoutes(Mat sourceImage, Mat binImage, Point endPoint) {
+void computeRoutes(Mat sourceImage, Mat binImage, Point endPoint, vector<Point> &vec_pivots) {
 
     // Add INITIAL POINT and FINAL POINT
     vec_pivots.clear();
@@ -270,7 +275,7 @@ void computeRoutes(Mat sourceImage, Mat binImage, Point endPoint) {
     genGraph(sourceImage,binImage,vec_pivots, N_NEIGHBORS);
 }
 
-vector<Point> traceShortestPath(Mat &sourceImage, Mat &binImage, int side_selection )
+vector<Point> traceShortestPath(Mat &sourceImage, Mat &binImage, int side_selection, vector<Point> &vec_pivots)
 {
     // Get the path 
     vector<Point> vPath = my_dijkstra(sourceImage,binImage,vec_pivots,N_NEIGHBORS, side_selection);
@@ -285,6 +290,159 @@ vector<Point> traceShortestPath(Mat &sourceImage, Mat &binImage, int side_select
     printf("\n");
 
     return vPath;
+}
+
+void vuelo_Atras_Derecha() {
+
+    //hover
+    //heli->setAngles(pitch, roll, yaw, height, hover);
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1000000);
+
+    cout <<"Derecha" << endl;
+    heli->setAngles(0.0, 4500.0, 0.0, 0.0, 0.0);
+    usleep(1500000);
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1500000);
+
+    cout<<"Atras"<<endl;
+    heli->setAngles(4000, 0.0, 0.0, 0.0, 0.0);
+    usleep(2500000);
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1000000);
+
+    cout <<"Izquierda" << endl;
+    heli->setAngles(0.0, -2000.0, 0.0, 0.0, 0.0);
+    usleep(2400000);
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1000000);
+
+
+    cout << "land" << endl;
+    heli->land();
+    usleep(1000000);
+
+}
+
+void vuelo_Mitad_Derecha() {
+
+    //hover
+    //heli->setAngles(pitch, roll, yaw, height, hover);
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1000000);
+
+    cout <<"Derecha" << endl;
+    heli->setAngles(0.0, 3000.0, 0.0, 0.0, 0.0);
+    usleep(1000000);
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1500000);
+
+    cout<<"Atras"<<endl;
+    heli->setAngles(3000, 0.0, 0.0, 0.0, 0.0);
+    usleep(1500000);
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1000000);
+
+    cout <<"Izquierda" << endl;
+    heli->setAngles(-500.0, -3000.0, 0.0, 0.0, 0.0);
+    usleep(1000000);
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(2000000);
+
+    cout << "land" << endl;
+    heli->land();
+    usleep(1000000);
+
+}
+
+void vuelo_Atras_Izquierda() {
+
+    //hover
+    //heli->setAngles(pitch, roll, yaw, height, hover);
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1000000);
+
+    cout <<"Derecha" << endl;
+    heli->setAngles(0.0, -4500.0, 0.0, 0.0, 0.0);
+    usleep(1500000);
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1500000);
+
+    cout<<"Atras"<<endl;
+    heli->setAngles(4000, 150.0, 0.0, 0.0, 0.0);
+    usleep(2500000);
+
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1500000);
+
+    cout <<"Izquierda" << endl;
+    heli->setAngles(0.0, 4000.0, 0.0, 0.0, 0.0);
+    usleep(3000000);
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1000000);
+
+
+    cout << "land" << endl;
+    heli->land();
+    usleep(1000000);
+
+}
+
+void vuelo_Mitad_Izquierda() {
+
+    //heli->setAngles(pitch, roll, yaw, height, hover);
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1000000);
+
+    cout <<"Derecha" << endl;
+    heli->setAngles(0.0, -6000.0, 0.0, 0.0, 0.0);
+    usleep(1000000);
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1500000);
+
+    cout<<"Atras"<<endl;
+    heli->setAngles(6000, 0.0, 0.0, 0.0, 0.0);
+    usleep(1300000);
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1000000);
+
+    cout <<"Izquierda" << endl;
+    heli->setAngles(0.0, 4200.0, 0.0, 0.0, 0.0);
+    usleep(1300000);
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1000000);
+
+    cout << "land" << endl;
+    heli->land();
+    usleep(1000000);
 }
 
 void calibrationMode(uint8_t key)
@@ -445,8 +603,8 @@ void calibrationMode(uint8_t key)
     {
         /* Create Trackbar */
         gray2threshold(grayImage,binImage,sliderBinValue);
-        namedWindow("Gray Binarization",1);
-        createTrackbar( "Binatization threshold", "Gray Binarization", &sliderBinValue, SLIDER_MAX, NULL);
+        namedWindow("Gray Binarization");
+        createTrackbar( "Threshold", "Gray Binarization", &sliderBinValue, SLIDER_MAX, NULL);
         imshow("Gray", grayImage);
         imshow("Gray Binarization", binImage);
     }
@@ -500,6 +658,8 @@ void objectDetectionMode(uint8_t key)
         // Copy to OpenCV Mat
         rawToMat(bgrImage, image);
 
+        // bgrImage = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
+
         imshow("Current image", bgrImage);
 
         switch (key)
@@ -536,12 +696,15 @@ void objectDetectionMode(uint8_t key)
             Mat bgrFilter;
             Mat binImage;
 
+            GaussianBlur(bgrImage,bgrImage,Size(7,7), 0, 0);
             colorFilter(bgrImage,bgrFilter,rBGR);
             cvtColor(bgrFilter, bgrFilter, CV_BGR2GRAY);
 
             imshow("Filtro", bgrFilter);
             
             gray2threshold(bgrFilter,binImage,80);
+            
+            dilate(binImage, binImage, Mat(), Point(-1, -1), 1, 1, 1);
             imshow("Binarizado",binImage);
         }
 
@@ -736,7 +899,7 @@ void objectDetectionMode(uint8_t key)
 }
 
 void routeMode(uint8_t key)
-{
+{   
     if(bManualMovement)
     {
         //// TODO TODO
@@ -745,6 +908,8 @@ void routeMode(uint8_t key)
 
         // Copy to OpenCV Mat
         rawToMat(bgrImage, image);
+
+        // bgrImage = imread("../fotosVision/muestra29.jpg", CV_LOAD_IMAGE_COLOR);
 
         imshow("Current image", bgrImage);
 
@@ -775,13 +940,15 @@ void routeMode(uint8_t key)
                 if(bRoutes){ destroyWindow("Graph"); }
                 else
                 {
-                    color2gray(obsWidenImage,grayImage);
-                    threshold(grayImage, binImage, 240, 255, 1);
+                    color2gray(obsWidenImage,grayObstacles);
+                    threshold(grayObstacles, binObstacles, 240, 255, 1);
 
-                    Mat routedImage = obsWidenImage.clone();
+                    routedImageEP1 = obsWidenImage.clone();
+                    routedImageEP2 = obsWidenImage.clone();
+
                     // Call this function to perform the path from initial point to END_POINT_1 or END_POINT_2
-                    // Last param could be: GOING_LEFT, GOING_RIGHT, GOING_NORMAL
-                    computeRoutes(routedImage,binImage,END_POINT_1);
+                    computeRoutes(routedImageEP1,binObstacles,END_POINT_1, vec_pivots_EP1);
+                    computeRoutes(routedImageEP2,binObstacles,END_POINT_2, vec_pivots_EP2);
                 }
 
                 bRoutes = !bRoutes;
@@ -836,7 +1003,9 @@ void routeMode(uint8_t key)
 
         bManualMovement = joypadAutonomous ? false : bManualMovement;
         
-        hover = joypadHover ? !hover : hover;
+        // hover = joypadHover ? !hover : hover;
+
+        hover = joypadHover ? 1 : 0;
 
         //setting the drone angles
         if (joypadRoll != 0 || joypadPitch != 0 || joypadVerticalSpeed != 0 || joypadYaw != 0)
@@ -856,6 +1025,8 @@ void routeMode(uint8_t key)
         int verAxisFig;
         int movAction;
 
+        widenObstacles(obsRealImage, obsWidenImage);
+
         int recognizedObjects = segmentationAndClassification(bgrImage, rBGR, horAxisFig, verAxisFig, movAction, true, false);
 
         if(recognizedObjects != 2)
@@ -871,6 +1042,38 @@ void routeMode(uint8_t key)
         if(!bManualMovement)
         {
             // Movimientos del parrot
+
+            // En medio y derecha
+            if(verAxisFig == 1 && horAxisFig == 1)
+            {
+                vector<Point> vPath = traceShortestPath(routedImageEP1,binImage,GOING_RIGHT,vec_pivots_EP1);
+                imshow("Selected route", routedImageEP1);
+                vuelo_Mitad_Derecha();
+            }
+
+            // En medio e izquierda
+            else if(verAxisFig == 1 && horAxisFig == 2)
+            {
+                vector<Point> vPath = traceShortestPath(routedImageEP1,binImage,GOING_LEFT,vec_pivots_EP1);
+                imshow("Selected route", routedImageEP1);
+                vuelo_Mitad_Izquierda();
+            }
+
+            // Atras y derecha
+            else if(verAxisFig == 2 && horAxisFig == 1)
+            {
+                vector<Point> vPath = traceShortestPath(routedImageEP2,binImage,GOING_RIGHT,vec_pivots_EP2);
+                imshow("Selected route", routedImageEP2);
+                vuelo_Atras_Derecha();
+            }
+
+            // Atras e izquierda
+            else if(verAxisFig == 2 && horAxisFig == 2)
+            {
+                vector<Point> vPath = traceShortestPath(routedImageEP2,binImage,GOING_LEFT,vec_pivots_EP2);
+                imshow("Selected route", routedImageEP2);
+                vuelo_Atras_Izquierda();
+            }
 
             bManualMovement = true;
 

@@ -127,7 +127,6 @@ int main() {
 	imshow("binImage",binImage);
 
 	// Call this dunction to perform the path from initial point to END_POINT_1 or END_POINT_2
-	// Last param could be: GOING_LEFT, GOING_RIGHT, GOING_NORMAL
 	computeRoutes(obsImage,binImage, END_POINT_2);
 
 	vector<Point> vPath = traceShortestPath(obsImage,binImage,GOING_LEFT);
