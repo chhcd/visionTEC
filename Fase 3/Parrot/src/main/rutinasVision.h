@@ -624,7 +624,7 @@ int segmentationAndClassification(Mat bgrImage, int rBGR[], int &horAxisFig, int
     return recognizedObjects;
 }
 
-void genPathPivots(Mat &sourceImage, Mat &binImage,int piv_num, vector<Point> &piv_coords, int side_selection){
+void genPathPivots(Mat &sourceImage, Mat &binImage,int piv_num, vector<Point> &piv_coords){
   int const map_offset = 20;
   int const middle_padding = 70;
   int x_map_max = sourceImage.size().width ;
@@ -635,7 +635,6 @@ void genPathPivots(Mat &sourceImage, Mat &binImage,int piv_num, vector<Point> &p
   // generate random seed
   srand(time(NULL));
 
-
   // generate pivots and draw them
   for(int i = 0; i < piv_num - 2; i++){ // two pivots are already start point and end point
     int temp_x = rand()%(x_map_max - x_map_min) + x_map_min - map_offset;
@@ -645,24 +644,12 @@ void genPathPivots(Mat &sourceImage, Mat &binImage,int piv_num, vector<Point> &p
     int val = binImage.at<uint8_t>(temp_y,temp_x);
     if(val == 0 ){
       // insert the piv coordenates
-      if(side_selection == GOING_LEFT){
-        if(temp_x < x_map_max/2 - middle_padding)
-          piv_coords.push_back(Point(temp_x,temp_y));
-      }
-      else if(side_selection == GOING_RIGHT){
-        if(temp_x > x_map_max/2+ middle_padding)
-          piv_coords.push_back(Point(temp_x,temp_y));
-      }
-      else{
-        piv_coords.push_back(Point(temp_x,temp_y)); 
-      }
-      
+      piv_coords.push_back(Point(temp_x,temp_y)); 
       // draw pivs on the source image
       circle(sourceImage, Point(temp_x,temp_y), 4 ,Scalar(0,0,255),CV_FILLED,8,0);
     }
   }
 }
-
 int getDistance(Point p1, Point p2){
   return sqrt(pow(p1.x - p2.x,2)+ pow(p1.y - p2.y,2));
 }
@@ -688,7 +675,7 @@ bool distanceSort(pair<int,Point> p1, pair<int,Point> p2){
   return (p1.first < p2.first);
 }
 
-vector< vector<long> > genGraph(Mat const &sourceImage, Mat const &binImage, vector<Point> piv_coords, int nn){
+void genGraph(Mat const &sourceImage, Mat const &binImage, vector<Point> &piv_coords, int nn){
   // Mat drawImg = sourceImage.clone();
   Mat drawImg = sourceImage;
 
@@ -726,12 +713,6 @@ vector< vector<long> > genGraph(Mat const &sourceImage, Mat const &binImage, vec
     // Add the n first points to the Adyacent matrix and draw connections
     for(int k = 0; k < nn ; k++){
       if(k < nodes.size()){
-        vector<Point>::iterator it;
-        // search original order element
-        it = find(piv_coords.begin(), piv_coords.end(),nodes[k].second);
-        // fill the matriz;
-        mDistances[i][distance(piv_coords.begin(),it)] = nodes[k].first; 
-        mDistances[distance(piv_coords.begin(),it)][i] = nodes[k].first;
         // Draw in the image
         line(drawImg, piv_coords[i], nodes[k].second ,  Scalar(255,0,0),1);
       }
@@ -750,80 +731,145 @@ vector< vector<long> > genGraph(Mat const &sourceImage, Mat const &binImage, vec
   // }
   imshow("Graph",drawImg);
 
-  return mDistances;
 }
 
-vector<Point> my_dijkstra(vector<vector <long> > G,vector<Point> vec_pivots,int startnode){
+vector<Point> my_dijkstra(Mat const &sourceImage, Mat const &binImage,vector<Point> piv_coords,int nn,int side_selection){
   
+  int const middle_padding = 30;
+  int x_map_max = sourceImage.size().width ;
+  int y_map_max = sourceImage.size().height ;
+  int const startnode = 0;
+  // Adyacences matrix
+  vector< vector<long> > mDistances;
+  // initialize with MAX
+  for(int i = 0; i < piv_coords.size(); i++){
+    vector<long> temp;
+    for(int j = 0; j < piv_coords.size(); j++){
+      if(i == j){
+        temp.push_back(0);
+      }else{
+        temp.push_back(INF);
+      }
+    }
+    mDistances.push_back(temp);
+  }
+
+  // Compute the nn closest distances to each node
+  for (int i = 0; i < piv_coords.size(); ++i){
+    // Distance, Point
+    vector<pair<int,Point> > nodes; 
+
+    // find Distances to all other points
+    for(int j = 0; j < piv_coords.size(); j++){
+      // no obstacles between points
+      if(no_obstacle(sourceImage, binImage,piv_coords[i], piv_coords[j]) && i != j){
+        int distance = getDistance(piv_coords[i],piv_coords[j]);
+        nodes.push_back(make_pair(distance,piv_coords[j]));
+      }
+    }
+    // sort nodes by distance
+    sort(nodes.begin(),nodes.end(),distanceSort);
+
+
+    // Add the n first points to the Adyacent matrix and draw connections
+    for(int k = 0; k < nn ; k++){
+      if(k < nodes.size()){
+        vector<Point>::iterator it;
+        // search original order element
+        it = find(piv_coords.begin(), piv_coords.end(),nodes[k].second);
+        // fill the matriz;
+        if(side_selection == GOING_RIGHT){
+          if(nodes[k].second.x > x_map_max/2 + middle_padding){
+            mDistances[i][distance(piv_coords.begin(),it)] = nodes[k].first; 
+            mDistances[distance(piv_coords.begin(),it)][i] = nodes[k].first;
+          }
+        }
+        else if(side_selection == GOING_LEFT){
+          if(nodes[k].second.x < x_map_max/2 - middle_padding){
+            mDistances[i][distance(piv_coords.begin(),it)] = nodes[k].first; 
+            mDistances[distance(piv_coords.begin(),it)][i] = nodes[k].first;  
+          }
+        }
+        else{
+          mDistances[i][distance(piv_coords.begin(),it)] = nodes[k].first; 
+          mDistances[distance(piv_coords.begin(),it)][i] = nodes[k].first;          
+        }
+      }
+    }
+    nodes.clear();
+  }
+
+
   // path do destiny
   vector<Point> vPath;
-
+  // copy Ady Mat
+  vector< vector<long> > G= mDistances;
   int n = G.size();
 
-  long cost[MAX_ARRAY][MAX_ARRAY],distance[MAX_ARRAY],pred[MAX_ARRAY];
-  long visited[MAX_ARRAY],count,mindistance,nextnode,i,j;
-  
-  //pred[] stores the predecessor of each node
-  //count gives the number of nodes seen so far
-  //create the cost matrix
-  for(i=0;i<n;i++)
-      for(j=0;j<n;j++)
-          if(G[i][j]==0)
-              cost[i][j]=INF;
-          else
-              cost[i][j]=G[i][j];
-  
-  //initialize pred[],distance[] and visited[]
-  for(i=0;i<n;i++)
-  {
-      distance[i]=cost[startnode][i];
-      pred[i]=startnode;
-      visited[i]=0;
-  }
-  
-  distance[startnode]=0;
-  visited[startnode]=1;
-  count=1;
-  
-  while(count<n-1)
-  {
-      mindistance=INF;
-      
-      //nextnode gives the node at minimum distance
-      for(i=0;i<n;i++)
-          if(distance[i]<mindistance&&!visited[i])
-          {
-              mindistance=distance[i];
-              nextnode=i;
-          }
-          
-          //check if a better path exists through nextnode            
-          visited[nextnode]=1;
-          for(i=0;i<n;i++)
-              if(!visited[i])
-                  if(mindistance+cost[nextnode][i]<distance[i])
-                  {
-                      distance[i]=mindistance+cost[nextnode][i];
-                      pred[i]=nextnode;
-                  }
-      count++;
-  }
+    long cost[MAX_ARRAY][MAX_ARRAY],distance[MAX_ARRAY],pred[MAX_ARRAY];
+    long visited[MAX_ARRAY],count,mindistance,nextnode,i,j;
+    
+    //pred[] stores the predecessor of each node
+    //count gives the number of nodes seen so far
+    //create the cost matrix
+    for(i=0;i<n;i++)
+        for(j=0;j<n;j++)
+            if(G[i][j]==0)
+                cost[i][j]=INF;
+            else
+                cost[i][j]=G[i][j];
+    
+    //initialize pred[],distance[] and visited[]
+    for(i=0;i<n;i++)
+    {
+        distance[i]=cost[startnode][i];
+        pred[i]=startnode;
+        visited[i]=0;
+    }
+    
+    distance[startnode]=0;
+    visited[startnode]=1;
+    count=1;
+    
+    while(count<n-1)
+    {
+        mindistance=INF;
+        
+        //nextnode gives the node at minimum distance
+        for(i=0;i<n;i++)
+            if(distance[i]<mindistance&&!visited[i])
+            {
+                mindistance=distance[i];
+                nextnode=i;
+            }
+            
+            //check if a better path exists through nextnode            
+            visited[nextnode]=1;
+            for(i=0;i<n;i++)
+                if(!visited[i])
+                    if(mindistance+cost[nextnode][i]<distance[i])
+                    {
+                        distance[i]=mindistance+cost[nextnode][i];
+                        pred[i]=nextnode;
+                    }
+        count++;
+    }
+ 
+    // print the path and distance of each node
+    for(i=0;i<2;i++)
+        if(i!=startnode){
+            // printf("\nPath=%ld",i); 
+            vPath.push_back(piv_coords[1]) ; 
+            j=i;
+            do{
+                j=pred[j];
+                // insert the nodes into path vec
+                vPath.push_back(piv_coords[j]);
+                // printf("<-%ld",j);
+            }while(j!=startnode);
+    }
 
-  // print the path and distance of each node
-  for(i=0;i<2;i++)
-      if(i!=startnode){
-          // printf("\nPath=%ld",i); 
-          vPath.push_back(vec_pivots[1]) ; 
-          j=i;
-          do{
-              j=pred[j];
-              // insert the nodes into path vec
-              vPath.push_back(vec_pivots[j]);
-              // printf("<-%ld",j);
-          }while(j!=startnode);
-  }
-
-  return vPath;
+    return vPath;
 
 }
 

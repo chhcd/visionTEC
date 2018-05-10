@@ -63,23 +63,23 @@ void simulatePath(Mat sourceImage, vector<Point> &vPath){
 	destroyWindow("Drone location");
 }
 
-void computeRoutes(Mat sourceImage, Mat binImage, int side_selection) {
+void computeRoutes(Mat sourceImage, Mat binImage) {
 
     // Add INITIAL POINT and FINAL POINT
     vec_pivots.push_back(Point(START_POINT)); circle(sourceImage, Point(START_POINT), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
     vec_pivots.push_back(Point(END_POINT_1)); circle(sourceImage, Point(END_POINT_1), 10 ,Scalar(200,200,0),CV_FILLED,8,0);
 
     // pivoting the image
-    genPathPivots(sourceImage,binImage,N_PIVOTS,vec_pivots,side_selection);
+    genPathPivots(sourceImage,binImage,N_PIVOTS,vec_pivots);
 
-    // creating the graph by joining the pivots, draws the graph and reuturns Ady. Matrix
-    mDistances = genGraph(sourceImage,binImage,vec_pivots, N_NEIGHBORS);
+    // creating the graph by joining the pivots, draws the graph 
+    genGraph(sourceImage,binImage,vec_pivots, N_NEIGHBORS);
 }
 
-vector<Point> traceShortestPath(Mat &sourceImage)
+vector<Point> traceShortestPath(Mat &sourceImage, Mat &binImage, int side_selection )
 {
     // Get the path 
-    vector<Point> vPath = my_dijkstra(mDistances,vec_pivots,0);
+    vector<Point> vPath = my_dijkstra(sourceImage,binImage,vec_pivots,N_NEIGHBORS, side_selection);
     
     int i;
     printf("(%d,%d)", vPath[0].x,vPath[0].y);
@@ -130,9 +130,9 @@ int main() {
 
 	// Call this dunction to perform the path from initial point to END_POINT_1 or END_POINT_2
 	// Last param could be: GOING_LEFT, GOING_RIGHT, GOING_NORMAL
-	computeRoutes(obsImage,binImage,GOING_LEFT);
+	computeRoutes(obsImage,binImage);
 
-	vector<Point> vPath = traceShortestPath(obsImage);
+	vector<Point> vPath = traceShortestPath(obsImage,binImage,GOING_LEFT);
 
 	// Uncomment this line to simulate the path
 	simulatePath(obsImage, vPath);
