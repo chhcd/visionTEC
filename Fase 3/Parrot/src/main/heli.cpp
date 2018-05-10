@@ -300,6 +300,14 @@ void vuelo_Atras_Derecha() {
     heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
     usleep(1000000);
 
+    cout<<"Eleva"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 1000.0, 1);
+    usleep(800000);
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1000000);
+
     cout <<"Derecha" << endl;
     heli->setAngles(0.0, 4500.0, 0.0, 0.0, 0.0);
     usleep(1500000);
@@ -318,7 +326,7 @@ void vuelo_Atras_Derecha() {
 
     cout <<"Izquierda" << endl;
     heli->setAngles(0.0, -2000.0, 0.0, 0.0, 0.0);
-    usleep(2400000);
+    usleep(2800000);
 
     cout<<"hover"<<endl;
     heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
@@ -341,7 +349,7 @@ void vuelo_Mitad_Derecha() {
 
     cout <<"Derecha" << endl;
     heli->setAngles(0.0, 3000.0, 0.0, 0.0, 0.0);
-    usleep(1000000);
+    usleep(2000000);
 
     cout<<"hover"<<endl;
     heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
@@ -349,14 +357,14 @@ void vuelo_Mitad_Derecha() {
 
     cout<<"Atras"<<endl;
     heli->setAngles(3000, 0.0, 0.0, 0.0, 0.0);
-    usleep(1500000);
+    usleep(1600000);
 
     cout<<"hover"<<endl;
     heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
     usleep(1000000);
 
     cout <<"Izquierda" << endl;
-    heli->setAngles(-500.0, -3000.0, 0.0, 0.0, 0.0);
+    heli->setAngles(-500.0, -5000.0, 0.0, 0.0, 0.0);
     usleep(1000000);
 
     cout<<"hover"<<endl;
@@ -377,16 +385,16 @@ void vuelo_Atras_Izquierda() {
     heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
     usleep(1000000);
 
-    cout <<"Derecha" << endl;
-    heli->setAngles(0.0, -4500.0, 0.0, 0.0, 0.0);
-    usleep(1500000);
+    cout <<"Izquierda" << endl;
+    heli->setAngles(0.0, -4300.0, 0.0, 0.0, 0.0);
+    usleep(1900000);
 
     cout<<"hover"<<endl;
     heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
     usleep(1500000);
 
     cout<<"Atras"<<endl;
-    heli->setAngles(4000, 150.0, 0.0, 0.0, 0.0);
+    heli->setAngles(4000, 0.0, 0.0, 0.0, 0.0);
     usleep(2500000);
 
 
@@ -394,9 +402,9 @@ void vuelo_Atras_Izquierda() {
     heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
     usleep(1500000);
 
-    cout <<"Izquierda" << endl;
-    heli->setAngles(0.0, 4000.0, 0.0, 0.0, 0.0);
-    usleep(3000000);
+    cout <<"Derecha" << endl;
+    heli->setAngles(0.0, 3100.0, 0.0, 0.0, 0.0);
+    usleep(2200000);
 
     cout<<"hover"<<endl;
     heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
@@ -411,38 +419,42 @@ void vuelo_Atras_Izquierda() {
 
 void vuelo_Mitad_Izquierda() {
 
+   //hover
     //heli->setAngles(pitch, roll, yaw, height, hover);
     cout<<"hover"<<endl;
     heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
     usleep(1000000);
 
-    cout <<"Derecha" << endl;
-    heli->setAngles(0.0, -6000.0, 0.0, 0.0, 0.0);
-    usleep(1000000);
+    cout <<"Izquierda" << endl;
+    heli->setAngles(0.0, -4300.0, 0.0, 0.0, 0.0);
+    usleep(1900000);
 
     cout<<"hover"<<endl;
     heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
     usleep(1500000);
 
     cout<<"Atras"<<endl;
-    heli->setAngles(6000, 0.0, 0.0, 0.0, 0.0);
-    usleep(1300000);
+    heli->setAngles(3000, 0.0, 0.0, 0.0, 0.0);
+    usleep(1600000);
+
+    cout<<"hover"<<endl;
+    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+    usleep(1500000);
+
+    cout <<"Derecha" << endl;
+    heli->setAngles(0.0, 3100.0, 0.0, 0.0, 0.0);
+    usleep(2200000);
 
     cout<<"hover"<<endl;
     heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
     usleep(1000000);
 
-    cout <<"Izquierda" << endl;
-    heli->setAngles(0.0, 4200.0, 0.0, 0.0, 0.0);
-    usleep(1300000);
-
-    cout<<"hover"<<endl;
-    heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
-    usleep(1000000);
 
     cout << "land" << endl;
     heli->land();
     usleep(1000000);
+
+
 }
 
 void calibrationMode(uint8_t key)
@@ -961,6 +973,10 @@ void routeMode(uint8_t key)
             namedWindow("Drone size");
             createTrackbar( "Drone radius", "Drone size", &drone_rad, 50, NULL);
             imshow("Drone size", obsWidenImage);
+
+            color2gray(obsWidenImage,grayObstacles);
+            threshold(grayObstacles, binObstacles, 240, 255, 1);
+            imshow("Binary environment", binObstacles);
         }
 
         if (useJoystick)
@@ -1043,15 +1059,27 @@ void routeMode(uint8_t key)
         {
             // Movimientos del parrot
 
-            // TODO TODO TODO
-            if(movAction == 1)
+            cout<<"hover"<< endl;
+            heli->setAngles(0.0, 0.0, 0.0, 0.0, 1);
+            usleep(1500000);
+
+            if (movAction==1)
             {
-                // Ir hacia arriba
+                //Elevar
+                //heli->setAngles(pitch, roll, yaw, height, hover);
+                cout << "Lift" << endl;
+                heli->setAngles(0.0, 0.0, 0.0, -2500.0, 1.0);
+                usleep(1000000);
             }
-            else if(movAction == 2)
+
+            else if (movAction==2)
             {
-                // Ir hacia abajo
-            }   
+                //Bajar
+                //heli->setAngles(pitch, roll, yaw, height, hover);
+                cout << "Down" << endl;
+                heli->setAngles(0.0, 0.0, 0.0, 2500.0, 1.0);
+                usleep(1000000);
+            } 
 
             // En medio y derecha
             if(verAxisFig == 1 && horAxisFig == 1)
